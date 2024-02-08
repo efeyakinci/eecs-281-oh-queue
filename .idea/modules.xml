@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/eecs-281-oh-queue.iml" filepath="$PROJECT_DIR$/.idea/eecs-281-oh-queue.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../eecs-281-oh-queue-service/.idea/eecs-281-oh-queue-service.iml" filepath="$PROJECT_DIR$/../eecs-281-oh-queue-service/.idea/eecs-281-oh-queue-service.iml" />
     </modules>
   </component>
 </project>
