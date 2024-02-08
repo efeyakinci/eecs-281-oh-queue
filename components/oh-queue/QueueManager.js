@@ -1,6 +1,6 @@
 import React, {useContext, useState} from 'react';
 import {Button, HStack, Icon, SimpleGrid, VStack, Text, Heading, Divider} from "@chakra-ui/react";
-import {IoMegaphone, IoPerson, IoTrash} from "react-icons/io5";
+import {IoFitness, IoMegaphone, IoPerson, IoTrash} from "react-icons/io5";
 import OfficeHoursStatusDescriptor from "@/components/oh-queue/OfficeHoursStatusDescriptor";
 import BroadcastMessageModal from "@/components/oh-queue/modals/BroadcastMessageModal";
 import QueueContext from "@/components/oh-queue/QueueContext";
@@ -23,6 +23,11 @@ const QueueManager = ({queueLength, ...props}) => {
                     colorScheme={'yellow'}
                     onClick={() => setShowBroadcastModal(true)}>
                     Broadcast Message
+                </Button>
+                <Button
+                    leftIcon={<Icon as={IoFitness} boxSize={4}/>}
+                    colorScheme={'purple'}>
+                    Ask for Heartbeat
                 </Button>
             </SimpleGrid>
 
