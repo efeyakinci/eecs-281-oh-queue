@@ -66,7 +66,7 @@ const QueueSignupForm = ({values, handleChange, handleBlur, handleSubmit}) => {
                     onBlur={handleBlur}
                 />
                 <FormHelperText>For virtual office hours, put your meeting link.</FormHelperText>
-                <FormHelperText>For in-person office hours, put where you are and what you're wearing.</FormHelperText>
+                <FormHelperText>For in-person office hours, put where you are and what you&apos;re wearing.</FormHelperText>
             </FormControl>
 
             <FormControl>
