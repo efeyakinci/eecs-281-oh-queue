@@ -8,21 +8,23 @@ import {
     setItemInfoHandler, setQueueDataUpdateHandler,
     setQueueUpdateHandler
 } from "@/service_components/SocketApi";
-import QueueContext from "@/components/oh-queue/QueueContext";
+import QueueContext from "@/components/contexts/QueueContext";
 import {useUserStore} from "@/stores/UserStore";
 import QueueListDisplay from "@/components/oh-queue/QueueListDisplay";
 import {errorToast} from "@/components/oh-queue/Toasts";
+import QueueStatusContext from "@/components/contexts/QueueStatusContext";
 
 const QueueList = ({...props}) => {
     const [queueWaiters, setQueueWaiters] = useState([]);
-    const {selectedQueue} = useContext(QueueContext);
+    const {selectedQueue, setSelectedQueue } = useContext(QueueContext);
+    const {queueStatus, setQueueStatus} = useContext(QueueStatusContext);
     const loggedInUser = useUserStore(state => state.uniqname);
     const toast = useToast();
 
     const [waiterInfos, setWaiterInfos] = useState({});
     const [waiterIndices, setWaiterIndices] = useState({});
 
-    const queueInfoUpdateHandler = (data) => {
+    const queueInfoUpdateHandler = useCallback((data) => {
         if (data.error) {
             toast(errorToast(data.error));
         }
@@ -30,7 +32,7 @@ const QueueList = ({...props}) => {
         setWaiterInfos((prevInfos) => {
             return {...prevInfos, ...data.item_infos};
         });
-    };
+    }, [toast]);
 
     useEffect(() => {
         if (!selectedQueue.id) return;
@@ -69,14 +71,12 @@ const QueueList = ({...props}) => {
         if (!selectedQueue.id) return;
 
         const queueUpdateHandler = (data) => {
-            console.log("Received queue update", data)
             if (data.error) {
                 toast(errorToast(data.error));
             }
 
             setWaiterIndices(data.updated_queue);
             const removableUids = new Set(data.removable_uids);
-            console.log("Removing uids", removableUids)
             setWaiterInfos((prevInfos) => {
                 const newInfos = Object.fromEntries(
                     Object.entries(prevInfos)
@@ -84,7 +84,11 @@ const QueueList = ({...props}) => {
                 );
 
                 return {...newInfos};
-            })
+            });
+
+            if (data.queue_status) {
+                setQueueStatus(data.queue_status);
+            }
         }
 
         const updateHandlerCleanup = setQueueUpdateHandler(queueUpdateHandler);
@@ -98,7 +102,7 @@ const QueueList = ({...props}) => {
             updateHandlerCleanup();
             dataUpdateHandlerCleanup();
         }
-    }, [selectedQueue, queueInfoUpdateHandler, toast])
+    }, [selectedQueue, queueInfoUpdateHandler, setSelectedQueue, toast])
 
     return (
         <VStack {...props} align={'flex-start'} h={'100%'}>

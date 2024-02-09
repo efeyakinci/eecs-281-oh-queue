@@ -20,7 +20,9 @@ const QueueEvents = {
     BEING_HELPED: 'queue:being_helped',
     SEND_MESSAGE: 'queue:send_message',
     RECEIVE_MESSAGE: 'queue:receive_message',
-    BROADCASE_MESSAGE: 'queue:broadcast_message',
+    BROADCAST_MESSAGE: 'queue:broadcast_message',
+    REQUEST_HEARTBEAT: 'queue:request_heartbeat',
+    HEARTBEAT: 'queue:heartbeat'
 }
 
 const AuthEvents = {
@@ -42,7 +44,9 @@ export const unsubscribeFromQueue = (queueId) => {
 }
 
 export const joinQueue = (queueId, {help_description, location, time_requested}) => {
-    socket.emit('queue:join', {queue_id: queueId, help_description, location, time_requested});
+    socket.emit('queue:join', {queue_id: queueId, help_description, location, time_requested}, ({uid}) => {
+        activeQueues.add(queueId);
+    });
 }
 
 export const leaveQueue = (queueId, uid) => {
@@ -100,8 +104,8 @@ export const helpStudent = (queueId, uid, help) => {
     socket.emit(QueueEvents.HELP_STUDENT, {queue_id: queueId, uid, is_helped: help});
 }
 
-export const pinStudent = (queueId, uid, is_pinned) => {
-    socket.emit(QueueEvents.PIN_STUDENT, {queue_id: queueId, uid, is_pinned});
+export const markStudentAsWaiting = (queueId, uid, is_in_waiting_room) => {
+    socket.emit(QueueEvents.PIN_STUDENT, {queue_id: queueId, uid, is_in_waiting_room});
 }
 
 export const doneHelpingStudent = (queueId, uid) => {
@@ -130,5 +134,21 @@ export const sendMessage = (queueId, message, uniqname) => {
 }
 
 export const broadcastMessage = (queueId, message) => {
-    socket.emit(QueueEvents.BROADCASE_MESSAGE, {queue_id: queueId, message});
+    socket.emit(QueueEvents.BROADCAST_MESSAGE, {queue_id: queueId, message});
+}
+
+export const requestHeartbeat = (queueId, timeToRespond) => {
+    socket.emit(QueueEvents.REQUEST_HEARTBEAT, {queue_id: queueId, time_to_respond: timeToRespond});
+}
+
+export const setOnHeartbeat = (handler) => {
+    socket.on(QueueEvents.REQUEST_HEARTBEAT, handler);
+
+    return () => {
+        socket.off(QueueEvents.REQUEST_HEARTBEAT, handler);
+    }
+}
+
+export const sendHeartbeat = (requestId) => {
+    socket.emit(QueueEvents.HEARTBEAT, {request_id: requestId});
 }

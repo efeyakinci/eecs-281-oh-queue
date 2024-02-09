@@ -5,3 +5,4 @@ export const MotionVStack = motion(VStack);
 export const MotionBox = motion(Box);
 export const MotionIconButton = motion(Icon);
 export const MotionFlex = motion(Flex);
+export const MotionIcon = motion(Icon);

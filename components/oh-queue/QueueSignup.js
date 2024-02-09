@@ -15,11 +15,13 @@ import {Formik} from "formik";
 import {IoPersonAdd} from "react-icons/io5";
 import {MotionVStack} from "@/components/motion-components/motion-components";
 import {joinQueue} from "@/service_components/SocketApi";
-import QueueContext from "@/components/oh-queue/QueueContext";
+import QueueContext from "@/components/contexts/QueueContext";
 import OfficeHoursStatusDescriptor from "@/components/oh-queue/OfficeHoursStatusDescriptor";
+import QueueStatusContext from "@/components/contexts/QueueStatusContext";
 
 const QueueSignup = (props) => {
     const { selectedQueue } = useContext(QueueContext);
+    const { queueStatus } = useContext(QueueStatusContext);
 
     const onFormSubmit = (values) => {
         joinQueue(selectedQueue.id, values);
@@ -27,7 +29,7 @@ const QueueSignup = (props) => {
 
     return (
         <MotionVStack {...props} align={'flex-start'}>
-            <OfficeHoursStatusDescriptor w={'100%'}/>
+            <OfficeHoursStatusDescriptor w={'100%'} queueStatus={queueStatus}/>
             <Heading>Sign Up</Heading>
             <Formik initialValues={{help_description: '', location: '', time_requested: 0}} onSubmit={onFormSubmit}>
                 {({values, handleChange, handleBlur, handleSubmit}) => (
@@ -36,6 +38,7 @@ const QueueSignup = (props) => {
                         handleChange={handleChange}
                         handleBlur={handleBlur}
                         handleSubmit={handleSubmit}
+                        queueIsOpen={queueStatus?.current_event !== undefined}
                     />
                 )}
             </Formik>
@@ -43,7 +46,7 @@ const QueueSignup = (props) => {
     );
 };
 
-const QueueSignupForm = ({values, handleChange, handleBlur, handleSubmit}) => {
+const QueueSignupForm = ({values, handleChange, handleBlur, handleSubmit, queueIsOpen}) => {
     return (
         <VStack as={'form'} w={'100%'} spacing={4} align={'flex-start'} onSubmit={handleSubmit}>
             <FormControl>
@@ -81,7 +84,7 @@ const QueueSignupForm = ({values, handleChange, handleBlur, handleSubmit}) => {
                 leftIcon={<Icon as={IoPersonAdd} />}
                 type={'submit'}
                 colorScheme={'green'}
-                isDisabled={!values.help_description || !values.location}
+                isDisabled={!values.help_description || !values.location || !queueIsOpen}
             >Sign Up</Button>
         </VStack>
     );

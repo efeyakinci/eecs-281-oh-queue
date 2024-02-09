@@ -8,10 +8,10 @@ import QueueManager from "@/components/oh-queue/QueueManager";
 import {motion} from "framer-motion";
 import {MotionVStack} from "@/components/motion-components/motion-components";
 import QueueSelector from "@/components/oh-queue/QueueSelector";
-import QueueContext from "@/components/oh-queue/QueueContext";
+import QueueContext from "@/components/contexts/QueueContext";
 import api from "@/service_components/api";
 import {
-    setOnBeingHelped,
+    setOnBeingHelped, setOnHeartbeat,
     setOnMessageReceived,
     subscribeToQueue,
     unsubscribeFromQueue
@@ -19,6 +19,8 @@ import {
 import OfficeHoursStatusDescriptor from "@/components/oh-queue/OfficeHoursStatusDescriptor";
 import BeingHelpedModal from "@/components/oh-queue/modals/BeingHelpedModal";
 import MessageReceivedModal from "@/components/oh-queue/modals/MessageReceivedModal";
+import RespondToHeartbeatModal from "@/components/oh-queue/modals/RespondToHeartbeatModal";
+import QueueStatusContext from "@/components/contexts/QueueStatusContext";
 
 
 const QueueContainer = (props) => {
@@ -34,7 +36,15 @@ const QueueContainer = (props) => {
 
     const [selectedQueue, setSelectedQueue] = useState({
         id: undefined,
-        queueName: undefined
+        queueName: undefined,
+        status: {}
+    });
+
+    const [queueStatus, setQueueStatus] = useState({});
+
+    const [heartbeat, setHeartbeat] = useState({
+        showModal: false,
+        heartbeatRequest: {}
     });
 
     const [availableQueues, setAvailableQueues] = useState({});
@@ -69,9 +79,18 @@ const QueueContainer = (props) => {
             })
         });
 
+        const onHeartbeatReceivedCleanup = setOnHeartbeat((data) => {
+            console.log("Heartbeat received")
+            setHeartbeat({
+                showModal: true,
+                heartbeatRequest: data
+            });
+        });
+
         return () => {
             beingHelpedCleanup();
             onMessageReceivedCleanup();
+            onHeartbeatReceivedCleanup();
         }
     }, []);
 
@@ -91,6 +110,7 @@ const QueueContainer = (props) => {
         <Flex justify={"center"} align={"center"} {...props}>
             <VStack w={['100%']} h={'100%'} align={'flex-start'}>
                 <Flex w={'100%'} h={'100%'}>
+                    <QueueStatusContext.Provider value={{queueStatus, setQueueStatus}}>
                     <QueueContext.Provider value={{selectedQueue, setSelectedQueue}}>
                     <QueueSelector
                         variants={queueSelectorVariants}
@@ -116,11 +136,13 @@ const QueueContainer = (props) => {
                     </MotionVStack>
                     <MotionVStack flex={'1'} layout />
                     </QueueContext.Provider>
+                    </QueueStatusContext.Provider>
                 </Flex>
             </VStack>
 
             <BeingHelpedModal isOpen={beingHelped.showModal} isBeingHelped={beingHelped.beingHelped} onClose={() => setBeingHelped({showModal: false, beingHelped: false})} />
             <MessageReceivedModal isOpen={receivedMessage.isMessageReceived} message={receivedMessage.message} onClose={() => setReceivedMessage({message: "", isMessageReceived: false})} />
+            <RespondToHeartbeatModal isOpen={heartbeat.showModal} requestData={heartbeat.heartbeatRequest} onClose={() => setHeartbeat({showModal: false, heartbeatRequest: {}})} />
         </Flex>
     );
 };
