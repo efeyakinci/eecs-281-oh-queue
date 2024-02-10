@@ -34,9 +34,9 @@ const SendMessageModal = ({isOpen, onClose, queueId, ...props}) => {
                 <ModalCloseButton />
                 <ModalBody>
                     <VStack spacing={4}>
-                        <Text color={'gray.600'}>When there are lots of students in the queue who have been waiting for a long time, it can be hard to know if they are still there. </Text>
+                        <Text>When there are lots of students in the queue who have been waiting for a long time, it can be hard to know if they are still there. </Text>
 
-                        <Text color={'gray.600'}> You can send a request for a heartbeat to all students in the queue to check if they are still there. If they don&apos;t respond to the queue heartbeat by that time, they will be removed from the queue. </Text>
+                        <Text> You can send a request for a heartbeat to all students in the queue to check if they are still there. If they don&apos;t respond to the queue heartbeat by that time, they will be removed from the queue. </Text>
 
                         <NumberInput
                             defaultValue={8}
@@ -49,7 +49,7 @@ const SendMessageModal = ({isOpen, onClose, queueId, ...props}) => {
                                 <NumberDecrementStepper />
                             </NumberInputStepper>
                         </NumberInput>
-                        <Text color={'gray.600'}>(minutes)</Text>
+                        <Text>(minutes)</Text>
                     </VStack>
                 </ModalBody>
                 <ModalFooter>

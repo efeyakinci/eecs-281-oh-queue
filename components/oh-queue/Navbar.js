@@ -1,19 +1,27 @@
 import React, {useEffect} from 'react';
-import {Button, Flex, HStack, Icon, Input, Spacer, Text} from "@chakra-ui/react";
+import {Button, Flex, HStack, Icon, IconButton, Input, Spacer, Text, useColorMode} from "@chakra-ui/react";
 import {useUserStore} from "@/stores/UserStore";
-import {IoPerson} from "react-icons/io5";
+import {IoMoon, IoPerson} from "react-icons/io5";
 import {GoogleLogin, useGoogleLogin} from "@react-oauth/google";
 import api, {api_client} from "@/service_components/api";
 import {loginWithGoogle, logout, tokenLogin} from "@/service_components/SocketApi";
 
 const Navbar = (props) => {
     const uniqname = useUserStore(state => state.uniqname);
+    const { colorMode, toggleColorMode} = useColorMode();
 
     return (
         <Flex justify={'space-between'} align={'center'} py={4} px={16} shadow={'base'} {...props}>
             <Flex justify={'flex-begin'}>
             </Flex>
             <Flex justify={'flex-end'}>
+                <IconButton
+                    aria-label={'color-mode'}
+                    onClick={toggleColorMode}i
+                    icon={<Icon as={IoMoon} boxSize={4}/>}
+                    variant={'ghost'}
+                    cursor={'pointer'}
+                    mr={4}/>
                 {uniqname ? <LoggedInNavbarContents uniqname={uniqname}/> : <LoggedOutNavbarContents />}
             </Flex>
         </Flex>

@@ -1,5 +1,5 @@
 import React from 'react';
-import {Box, Heading, VStack, Text, Flex, CloseButton} from "@chakra-ui/react";
+import {Box, Heading, VStack, Text, Flex, CloseButton, useColorMode} from "@chakra-ui/react";
 
 const QueueAnnouncements = (props) => {
 
@@ -13,8 +13,11 @@ const QueueAnnouncements = (props) => {
 };
 
 const QueueAnnouncement = ({announcement}) => {
+
+    const { colorMode } = useColorMode();
+
     return (
-        <VStack bg={'yellow.200'} w={'100%'} p={4} pt={4} spacing={0} borderRadius={4} align={'flex-start'}>
+        <VStack bg={colorMode === "light" ? 'yellow.200' : 'yellow.500'} w={'100%'} p={4} pt={4} spacing={0} borderRadius={4} align={'flex-start'}>
             <Flex>
                 {announcement}
             </Flex>

@@ -65,7 +65,6 @@ function QueueWaiter({waiter, onLeaveQueue, onHelpStudent, onPinStudent, ...prop
             align={'flex-start'}
             borderRadius={8}
             borderWidth={1}
-            borderColor={'gray.200'}
             {...props}>
             <VStack align={'flex-start'} spacing={1} w={'100%'}>
                 <Flex justify={'space-between'} w={'100%'}>

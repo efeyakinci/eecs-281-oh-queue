@@ -130,12 +130,6 @@ const QueueList = ({...props}) => {
 function EmptyQueueDisplay() {
     return (
         <VStack w={'100%'} align={'center'} spacing={4}>
-            <Image
-                src={'/empty_queue_image.webp'}
-                borderRadius={16}
-                boxShadow={"1px 2px 3px rgba(0,0,0,.5);"}
-                w={64}
-                h={64}></Image>
             <Heading size={'md'} fontWeight={'bold'} color={'gray'}>It&apos;s a little lonely in here...</Heading>
         </VStack>
     )

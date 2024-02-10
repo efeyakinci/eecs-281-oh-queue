@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react';
-import {Flex, Heading, Text, VStack} from "@chakra-ui/react";
+import {Flex, Heading, Text, useColorMode, VStack} from "@chakra-ui/react";
 import {MotionBox, MotionFlex, MotionIconButton, MotionVStack} from "@/components/motion-components/motion-components";
 import {ArrowRightIcon} from "@chakra-ui/icons";
 
@@ -75,13 +75,14 @@ const QueueSelector = ({onToggle, isOpen, selectedQueueId, setSelectedQueueId, a
 
 const SelectableQueue = ({queueName, selected, ...props}) => {
     const boxShadow = "rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px"
+    const { colorMode } = useColorMode();
 
     const selectedStyle=
     {
         boxShadow: boxShadow,
-        bgColor: 'black',
+        bgColor: colorMode === "light" ? 'black' : "white",
         fontWeight: 'bold',
-        color: 'white'
+        color: colorMode === "light" ? 'white' : 'black'
     }
 
     return (
