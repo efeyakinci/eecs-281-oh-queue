@@ -109,7 +109,7 @@ const QueueSignupForm = ({values, handleChange, handleBlur, handleSubmit, queueI
             </FormControl>
 
             <FormControl>
-                <FormLabel>How Long Do You Think It'll Take?</FormLabel>
+                <FormLabel>How Long Do You Think It&apos;ll Take?</FormLabel>
                 <NumberInput min={0}>
                     <NumberInputField placeholder={5} name={"time_requested"} onChange={handleChange} onBlur={handleBlur}/>
                 </NumberInput>
