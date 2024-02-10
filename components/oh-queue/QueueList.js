@@ -11,6 +11,8 @@ import {useUserStore} from "@/stores/UserStore";
 import QueueListDisplay from "@/components/oh-queue/QueueListDisplay";
 import {errorToast} from "@/components/oh-queue/Toasts";
 import useQueueStore from "@/stores/QueueStore";
+import {AnimatePresence} from "framer-motion";
+import {MotionBox} from "@/components/motion-components/motion-components";
 
 const QueueList = ({...props}) => {
     const [queueWaiters, setQueueWaiters] = useState([]);
@@ -103,7 +105,7 @@ const QueueList = ({...props}) => {
             updateHandlerCleanup();
             dataUpdateHandlerCleanup();
         }
-    }, [selectedQueueId, queueInfoUpdateHandler, toast])
+    }, [selectedQueueId,setQueueStatus, queueInfoUpdateHandler, toast])
 
     return (
         <VStack {...props} align={'flex-start'} h={'100%'}>
@@ -119,9 +121,11 @@ const QueueList = ({...props}) => {
                         waiters={queueWaiters}
                     />
 
+                <AnimatePresence>
                 {queueWaiters.length === 0 &&
                     <EmptyQueueDisplay />
                 }
+                </AnimatePresence>
             </VStack>
         </VStack>
     );
@@ -129,9 +133,21 @@ const QueueList = ({...props}) => {
 
 function EmptyQueueDisplay() {
     return (
-        <VStack w={'100%'} align={'center'} spacing={4}>
-            <Heading size={'md'} fontWeight={'bold'} color={'gray'}>It&apos;s a little lonely in here...</Heading>
-        </VStack>
+            <MotionBox
+                initial={{opacity: 0}}
+                animate={{opacity: 1}}
+                exit={{opacity: 0}}
+            >
+                <VStack w={'100%'} align={'center'} spacing={4}>
+                    <Heading size={'sm'} fontWeight={'bold'} color={'gray'}>It&apos;s a little lonely in here...</Heading>
+                    <Image
+                        alt={'Empty queue'}
+                        borderRadius={32}
+                        w={64}
+                        boxShadow={'lg'}
+                        src={'/empty_queue_image.webp'}/>
+                </VStack>
+            </MotionBox>
     )
 }
 

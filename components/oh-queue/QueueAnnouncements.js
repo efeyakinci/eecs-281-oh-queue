@@ -1,5 +1,5 @@
 import React from 'react';
-import {Box, Heading, VStack, Text, Flex, CloseButton, useColorMode} from "@chakra-ui/react";
+import {Flex, Heading, useColorMode, VStack} from "@chakra-ui/react";
 
 const QueueAnnouncements = (props) => {
 
@@ -7,7 +7,7 @@ const QueueAnnouncements = (props) => {
         <VStack spacing={4} w={'100%'} align={'flex-start'} {...props}>
             <Heading mb={2}>Announcements</Heading>
 
-            <QueueAnnouncement announcement={"The queue is currently closed."}/>
+            <QueueAnnouncement announcement={"Welcome to the EECS 281 Office Hours Queue!"}/>
         </VStack>
     );
 };

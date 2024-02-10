@@ -1,23 +1,21 @@
 import React, {useEffect, useState} from 'react';
-import {Box, Button, Divider, Flex, HStack, SimpleGrid, Spacer, useColorMode, useToast, VStack} from "@chakra-ui/react";
+import {Box, Divider, Flex, useToast, VStack} from "@chakra-ui/react";
 import QueueList from "@/components/oh-queue/QueueList";
 import QueueAnnouncements from "@/components/oh-queue/QueueAnnouncements";
 import QueueSignup from "@/components/oh-queue/QueueSignup";
 import {useUserStore} from "@/stores/UserStore";
 import QueueManager from "@/components/oh-queue/QueueManager";
-import {motion} from "framer-motion";
 import {MotionVStack} from "@/components/motion-components/motion-components";
 import QueueSelector from "@/components/oh-queue/QueueSelector";
-import QueueScheduleContext from "@/components/contexts/QueueScheduleContext";
 import api from "@/service_components/api";
 import {
     setErrorMessageHandler,
-    setOnBeingHelped, setOnHeartbeat,
+    setOnBeingHelped,
+    setOnHeartbeat,
     setOnMessageReceived,
     subscribeToQueue,
     unsubscribeFromQueue
 } from "@/service_components/SocketApi";
-import OfficeHoursStatusDescriptor from "@/components/oh-queue/OfficeHoursStatusDescriptor";
 import BeingHelpedModal from "@/components/oh-queue/modals/BeingHelpedModal";
 import MessageReceivedModal from "@/components/oh-queue/modals/MessageReceivedModal";
 import RespondToHeartbeatModal from "@/components/oh-queue/modals/RespondToHeartbeatModal";
@@ -96,7 +94,7 @@ const QueueContainer = (props) => {
             onHeartbeatReceivedCleanup();
             errorHandlerCleanup();
         }
-    }, []);
+    }, [toast]);
 
     const isStaff = useUserStore(state => state.isStaff);
 
@@ -117,7 +115,7 @@ const QueueContainer = (props) => {
     return (
         <Flex justify={"center"} align={"center"} {...props}>
             <VStack w={['100%']} h={'100%'} align={'flex-start'}>
-                <Flex w={'100%'} h={'100%'}>
+                <Flex w={'100%'} h={'100%'} flexDir={['column', 'row']}>
                     <QueueStatusContext.Provider value={{queueStatus, setQueueStatus}}>
                     <QueueSelector
                         variants={queueSelectorVariants}
@@ -131,8 +129,8 @@ const QueueContainer = (props) => {
                     />
                     <MotionVStack flex={5} layout mx={8}>
                     <QueueAnnouncements w={'100%'}/>
-                    <Flex w={'100%'} mt={8} spacing={16} columns={2}>
-                        <QueueList flex={[10, 9, 8]}/>
+                    <Flex w={'100%'} mt={8} spacing={16} columns={2} flexDirection={['column-reverse', 'row']}>
+                        <QueueList flex={[10, 9, 8]} pt={4}/>
                         <Box w={16} />
                         <VStack flex={'4'} spacing={8}>
                         {isStaff && <QueueManager w={'100%'}/>}

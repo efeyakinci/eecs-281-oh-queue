@@ -1,10 +1,8 @@
-import { Inter } from "next/font/google";
-import QueueWaiter from "@/components/oh-queue/QueueWaiter";
-import {Box, ChakraProvider, VStack} from "@chakra-ui/react";
+import {Box, VStack} from "@chakra-ui/react";
 import QueueContainer from "@/components/oh-queue/QueueContainer";
 import Navbar from "@/components/oh-queue/Navbar";
+import Footer from "@/components/oh-queue/Footer";
 
-const inter = Inter({ subsets: ["latin"] });
 
 export default function Home() {
   return (
@@ -12,6 +10,7 @@ export default function Home() {
             <Navbar w={'100%'} />
             <QueueContainer w={'100%'} mt={8}/>
             <Box h={16} />
+            <Footer />
         </VStack>
   );
 }
