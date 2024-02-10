@@ -15,9 +15,10 @@ import {Span} from "next/dist/server/lib/trace/tracer";
 import {AnimatePresence, motion} from "framer-motion";
 import {useUserStore} from "@/stores/UserStore";
 import {MotionBox, MotionVStack} from "@/components/motion-components/motion-components";
-import QueueContext from "@/components/contexts/QueueContext";
+import QueueScheduleContext from "@/components/contexts/QueueScheduleContext";
 import {doneHelpingStudent, helpStudent, leaveQueue, markStudentAsWaiting} from "@/service_components/SocketApi";
 import SendMessageModal from "@/components/oh-queue/modals/SendMessageModal";
+import useQueueStore from "@/stores/QueueStore";
 
 const attributeToIcon = {
     'help_description': IoHelpCircle,
@@ -36,7 +37,8 @@ function QueueWaiter({waiter, onLeaveQueue, onHelpStudent, onPinStudent, ...prop
 
     const [showMessageModal, setShowMessageModal] = useState(false);
 
-    const { selectedQueue } = useContext(QueueContext);
+    const selectedQueueId = useQueueStore(state => state.selectedQueueId);
+
 
     const processAttribute = (key, value) => {
         if (key === 'sign_up_time') {
@@ -88,23 +90,23 @@ function QueueWaiter({waiter, onLeaveQueue, onHelpStudent, onPinStudent, ...prop
                 ))}
 
                 {isStaff && <QueueWaiterStaffActions
-                    onHelp={(help) => helpStudent(selectedQueue.id, waiter.uid, help)}
-                    onDone={() => doneHelpingStudent(selectedQueue.id, waiter.uid)}
-                    onPin={() => markStudentAsWaiting(selectedQueue.id, waiter.uid, !waiter.top_attributes.in_waiting_room)}
+                    onHelp={(help) => helpStudent(selectedQueueId, waiter.uid, help)}
+                    onDone={() => doneHelpingStudent(selectedQueueId, waiter.uid)}
+                    onPin={() => markStudentAsWaiting(selectedQueueId, waiter.uid, !waiter.top_attributes.in_waiting_room)}
                     onMessage={() => {setShowMessageModal(true)}}
                     waiter={waiter}
                     mt={4}/>}
                 {isLoggedIn && loggedInUniqname === waiter.uniqname &&
                     <QueueWaiterSelfActionButtons
                         waiter = {waiter}
-                        onStopWaiting = {() => markStudentAsWaiting(selectedQueue.id, waiter.uid, false)}
-                        onLeave={() => leaveQueue(selectedQueue.id, waiter.uid)}
+                        onStopWaiting = {() => markStudentAsWaiting(selectedQueueId, waiter.uid, false)}
+                        onLeave={() => leaveQueue(selectedQueueId, waiter.uid)}
                         mt={4}/>}
             </VStack>
 
             <SendMessageModal
                 isOpen={showMessageModal}
-                queueId={selectedQueue.id}
+                queueId={selectedQueueId}
                 onClose={() => setShowMessageModal(false)}
                 toUniqname={waiter.uniqname} />
         </MotionVStack>
@@ -173,12 +175,6 @@ function QueueWaiterSelfActionButtons({waiter, onLeave, onMessage, onStopWaiting
                 Stop Waiting
             </QueueWaiterActionButton>
             }
-
-            <QueueWaiterActionButton
-                key={'message'}
-                leftIcon={<Icon as={IoChatbubbleEllipses} boxSize={4}/>}
-                colorScheme={'yellow'}
-                >Message Staff</QueueWaiterActionButton>
             </AnimatePresence>
         </HStack>
     );

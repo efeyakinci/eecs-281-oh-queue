@@ -22,7 +22,8 @@ const QueueEvents = {
     RECEIVE_MESSAGE: 'queue:receive_message',
     BROADCAST_MESSAGE: 'queue:broadcast_message',
     REQUEST_HEARTBEAT: 'queue:request_heartbeat',
-    HEARTBEAT: 'queue:heartbeat'
+    HEARTBEAT: 'queue:heartbeat',
+    ERROR: 'queue:error'
 }
 
 const AuthEvents = {
@@ -36,11 +37,11 @@ const socket = io(SERVICE_URL, {
 });
 
 export const subscribeToQueue = (queueId) => {
-    socket.emit('queue:subscribe', queueId);
+    socket.emit('queue:subscribe', {queue_id: queueId});
 };
 
 export const unsubscribeFromQueue = (queueId) => {
-    socket.emit('queue:unsubscribe', queueId);
+    socket.emit('queue:unsubscribe', {queue_id: queueId});
 }
 
 export const joinQueue = (queueId, {help_description, location, time_requested}) => {
@@ -113,7 +114,6 @@ export const doneHelpingStudent = (queueId, uid) => {
 }
 
 export const setOnBeingHelped = (handler) => {
-    console.log("Setting on being helped", handler);
     socket.on(QueueEvents.BEING_HELPED, handler);
 
     return () => {
@@ -151,4 +151,12 @@ export const setOnHeartbeat = (handler) => {
 
 export const sendHeartbeat = (requestId) => {
     socket.emit(QueueEvents.HEARTBEAT, {request_id: requestId});
+}
+
+export const setErrorMessageHandler = (handler) => {
+    socket.on(QueueEvents.ERROR, handler);
+
+    return () => {
+        socket.off(QueueEvents.ERROR, handler);
+    }
 }

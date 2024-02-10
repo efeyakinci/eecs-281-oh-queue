@@ -1,23 +1,24 @@
-import React, {useCallback, useContext, useEffect, useRef, useState} from 'react';
-import {Divider, Heading, HStack, Icon, Text, useToast, VStack} from "@chakra-ui/react";
+import React, {useCallback, useEffect, useState} from 'react';
+import {Divider, Heading, HStack, Icon, Image, Text, useToast, VStack} from "@chakra-ui/react";
 import {IoSchool} from "react-icons/io5";
 import {
-    leaveQueue,
     requestItemInfo,
     requestQueueUpdate,
-    setItemInfoHandler, setQueueDataUpdateHandler,
+    setQueueDataUpdateHandler,
     setQueueUpdateHandler
 } from "@/service_components/SocketApi";
-import QueueContext from "@/components/contexts/QueueContext";
 import {useUserStore} from "@/stores/UserStore";
 import QueueListDisplay from "@/components/oh-queue/QueueListDisplay";
 import {errorToast} from "@/components/oh-queue/Toasts";
-import QueueStatusContext from "@/components/contexts/QueueStatusContext";
+import useQueueStore from "@/stores/QueueStore";
 
 const QueueList = ({...props}) => {
     const [queueWaiters, setQueueWaiters] = useState([]);
-    const {selectedQueue, setSelectedQueue } = useContext(QueueContext);
-    const {queueStatus, setQueueStatus} = useContext(QueueStatusContext);
+
+    const selectedQueueId = useQueueStore(state => state.selectedQueueId);
+    const selectedQueueName = useQueueStore(state => state.selectedQueueName);
+
+    const setQueueStatus = useQueueStore(state => state.setStatus);
     const loggedInUser = useUserStore(state => state.uniqname);
     const toast = useToast();
 
@@ -35,12 +36,12 @@ const QueueList = ({...props}) => {
     }, [toast]);
 
     useEffect(() => {
-        if (!selectedQueue.id) return;
+        if (!selectedQueueId) return;
 
         setWaiterInfos({});
         setWaiterIndices({});
-        requestQueueUpdate(selectedQueue.id);
-    }, [selectedQueue, loggedInUser, toast]);
+        requestQueueUpdate(selectedQueueId);
+    }, [selectedQueueId, loggedInUser, toast]);
 
     useEffect(() => {
         const newWaiters = Object.keys(waiterIndices)
@@ -63,12 +64,12 @@ const QueueList = ({...props}) => {
     useEffect(() => {
         const unknownItems = Object.keys(waiterIndices).filter((uid) => !waiterInfos[uid]);
         if (unknownItems.length > 0) {
-            requestItemInfo(selectedQueue.id, unknownItems, queueInfoUpdateHandler);
+            requestItemInfo(selectedQueueId, unknownItems, queueInfoUpdateHandler);
         }
-    }, [selectedQueue, waiterIndices, waiterInfos, queueInfoUpdateHandler]);
+    }, [selectedQueueId, waiterIndices, waiterInfos, queueInfoUpdateHandler]);
 
     useEffect(() => {
-        if (!selectedQueue.id) return;
+        if (!selectedQueueId) return;
 
         const queueUpdateHandler = (data) => {
             if (data.error) {
@@ -87,7 +88,7 @@ const QueueList = ({...props}) => {
             });
 
             if (data.queue_status) {
-                setQueueStatus(data.queue_status);
+                setQueueStatus((status) => ({...status, ...data.queue_status}));
             }
         }
 
@@ -95,19 +96,19 @@ const QueueList = ({...props}) => {
 
         const dataUpdateHandlerCleanup = setQueueDataUpdateHandler(({updated_uids}) => {
             console.log("Requesting item info for", updated_uids)
-            requestItemInfo(selectedQueue.id, updated_uids, queueInfoUpdateHandler);
+            requestItemInfo(selectedQueueId, updated_uids, queueInfoUpdateHandler);
         })
 
         return () => {
             updateHandlerCleanup();
             dataUpdateHandlerCleanup();
         }
-    }, [selectedQueue, queueInfoUpdateHandler, setSelectedQueue, toast])
+    }, [selectedQueueId, queueInfoUpdateHandler, toast])
 
     return (
         <VStack {...props} align={'flex-start'} h={'100%'}>
             <Heading>{
-                selectedQueue.selectedQueueName ? selectedQueue.selectedQueueName : "Select a queue to get started!"
+                selectedQueueName ? selectedQueueName : "Select a queue to get started!"
             }</Heading>
             <HStack w={'100%'}>
                 <Icon as={IoSchool} /> <Text>{queueWaiters.length} students waiting</Text>
@@ -117,9 +118,27 @@ const QueueList = ({...props}) => {
                     <QueueListDisplay
                         waiters={queueWaiters}
                     />
+
+                {queueWaiters.length === 0 &&
+                    <EmptyQueueDisplay />
+                }
             </VStack>
         </VStack>
     );
 };
+
+function EmptyQueueDisplay() {
+    return (
+        <VStack w={'100%'} align={'center'} spacing={4}>
+            <Image
+                src={'/empty_queue_image.webp'}
+                borderRadius={16}
+                boxShadow={"1px 2px 3px rgba(0,0,0,.5);"}
+                w={64}
+                h={64}></Image>
+            <Heading size={'md'} fontWeight={'bold'} color={'gray'}>It&apos;s a little lonely in here...</Heading>
+        </VStack>
+    )
+}
 
 export default QueueList;

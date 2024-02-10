@@ -1,9 +1,20 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {MotionBox} from "@/components/motion-components/motion-components";
 import QueueWaiter from "@/components/oh-queue/QueueWaiter";
 import {AnimatePresence} from "framer-motion";
+import useQueueStore from "@/stores/QueueStore";
+import {useUserStore} from "@/stores/UserStore";
 
 const QueueListDisplay = ({waiters}) => {
+
+    const setQueueStatus = useQueueStore(state => state.setStatus);
+    const loggedInUser = useUserStore(state => state.uniqname);
+
+    useEffect(() => {
+        const userInQueue = waiters.some(waiter => waiter.uniqname === loggedInUser);
+        console.log("User in queue", userInQueue)
+        setQueueStatus(status => ({...status, userInQueue}))
+    }, [waiters]);
 
     return (
         <AnimatePresence>

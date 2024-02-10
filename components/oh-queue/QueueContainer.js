@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {Box, Button, Divider, Flex, HStack, SimpleGrid, Spacer, useColorMode, VStack} from "@chakra-ui/react";
+import {Box, Button, Divider, Flex, HStack, SimpleGrid, Spacer, useColorMode, useToast, VStack} from "@chakra-ui/react";
 import QueueList from "@/components/oh-queue/QueueList";
 import QueueAnnouncements from "@/components/oh-queue/QueueAnnouncements";
 import QueueSignup from "@/components/oh-queue/QueueSignup";
@@ -8,9 +8,10 @@ import QueueManager from "@/components/oh-queue/QueueManager";
 import {motion} from "framer-motion";
 import {MotionVStack} from "@/components/motion-components/motion-components";
 import QueueSelector from "@/components/oh-queue/QueueSelector";
-import QueueContext from "@/components/contexts/QueueContext";
+import QueueScheduleContext from "@/components/contexts/QueueScheduleContext";
 import api from "@/service_components/api";
 import {
+    setErrorMessageHandler,
     setOnBeingHelped, setOnHeartbeat,
     setOnMessageReceived,
     subscribeToQueue,
@@ -21,6 +22,8 @@ import BeingHelpedModal from "@/components/oh-queue/modals/BeingHelpedModal";
 import MessageReceivedModal from "@/components/oh-queue/modals/MessageReceivedModal";
 import RespondToHeartbeatModal from "@/components/oh-queue/modals/RespondToHeartbeatModal";
 import QueueStatusContext from "@/components/contexts/QueueStatusContext";
+import useQueueStore from "@/stores/QueueStore";
+import {errorToast} from "@/components/oh-queue/Toasts";
 
 
 const QueueContainer = (props) => {
@@ -32,12 +35,6 @@ const QueueContainer = (props) => {
     const [receivedMessage,setReceivedMessage] = useState({
         message: "",
         isMessageReceived: false
-    });
-
-    const [selectedQueue, setSelectedQueue] = useState({
-        id: undefined,
-        queueName: undefined,
-        status: {}
     });
 
     const [queueStatus, setQueueStatus] = useState({});
@@ -57,6 +54,8 @@ const QueueContainer = (props) => {
             flex: 2
         }
     }
+
+    const toast = useToast();
 
     useEffect(() => {
         api.get_queues().then((response) => {
@@ -87,14 +86,22 @@ const QueueContainer = (props) => {
             });
         });
 
+        const errorHandlerCleanup = setErrorMessageHandler(({error}) => {
+            toast(errorToast(error))
+        });
+
         return () => {
             beingHelpedCleanup();
             onMessageReceivedCleanup();
             onHeartbeatReceivedCleanup();
+            errorHandlerCleanup();
         }
     }, []);
 
     const isStaff = useUserStore(state => state.isStaff);
+
+    const selectedQueueId = useQueueStore(state => state.selectedQueueId);
+    const setSelectedQueue = useQueueStore(state => state.setSelectedQueue);
 
     const onSelectQueueId = (queueId) => {
         setSelectedQueue(prevQueueSelection => {
@@ -102,22 +109,22 @@ const QueueContainer = (props) => {
                 unsubscribeFromQueue(prevQueueSelection.id);
             }
             subscribeToQueue(queueId);
-            return {id: queueId, selectedQueueName: availableQueues[queueId]}
+            return {selectedQueueId: queueId, selectedQueueName: availableQueues[queueId]}
         });
     }
+
 
     return (
         <Flex justify={"center"} align={"center"} {...props}>
             <VStack w={['100%']} h={'100%'} align={'flex-start'}>
                 <Flex w={'100%'} h={'100%'}>
                     <QueueStatusContext.Provider value={{queueStatus, setQueueStatus}}>
-                    <QueueContext.Provider value={{selectedQueue, setSelectedQueue}}>
                     <QueueSelector
                         variants={queueSelectorVariants}
                         initial={"open"}
                         animate={isQueueSelectorOpen ? "open" : "closed"}
                         isOpen={isQueueSelectorOpen}
-                        selectedQueueId={selectedQueue.id}
+                        selectedQueueId={selectedQueueId}
                         setSelectedQueueId={onSelectQueueId}
                         availableQueues={availableQueues}
                         onToggle={() => setIsQueueSelectorOpen(prevState => !prevState)}
@@ -135,7 +142,6 @@ const QueueContainer = (props) => {
                     </Flex>
                     </MotionVStack>
                     <MotionVStack flex={'1'} layout />
-                    </QueueContext.Provider>
                     </QueueStatusContext.Provider>
                 </Flex>
             </VStack>

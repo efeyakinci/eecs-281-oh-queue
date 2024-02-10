@@ -22,8 +22,6 @@ const MessageReceivedModal = ({requestData, isOpen, onClose, ...props}) => {
 
     const readableTime = requestData ? moment(requestData.heartbeat_deadline).format("h:mm a") : "";
 
-    console.log(requestData)
-
     return (
         <Modal isOpen={isOpen} onClose={onClose}>
             <ModalOverlay />
@@ -31,7 +29,7 @@ const MessageReceivedModal = ({requestData, isOpen, onClose, ...props}) => {
                 <ModalHeader>Are you still there?</ModalHeader>
                 <ModalBody>
                     <Text>
-                    It looks like the queue has lots of people who may not be still here. The staff member has sent a request to all students in the queue to check if they are still there.
+                    It looks like the queue has lots of people who may not still be here. The staff member has sent a request to all students in the queue to make sure that they are still here.
                     </Text>
                     <Text mt={4} fontWeight={'bold'}>
                         Please click the acknowledge button by {readableTime} to keep your place in the queue.

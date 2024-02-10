@@ -3,13 +3,15 @@ import {Button, HStack, Icon, SimpleGrid, VStack, Text, Heading, Divider} from "
 import {IoFitness, IoMegaphone, IoPerson, IoTrash} from "react-icons/io5";
 import OfficeHoursStatusDescriptor from "@/components/oh-queue/OfficeHoursStatusDescriptor";
 import BroadcastMessageModal from "@/components/oh-queue/modals/BroadcastMessageModal";
-import QueueContext from "@/components/contexts/QueueContext";
+import QueueScheduleContext from "@/components/contexts/QueueScheduleContext";
 import RequestHeartbeatModal from "@/components/oh-queue/modals/RequestHeartbeatModal";
+import useQueueStore from "@/stores/QueueStore";
 
 const QueueManager = ({queueLength, ...props}) => {
     const [showBroadcastModal, setShowBroadcastModal] = useState(false);
     const [showRequestHeartbeatModal, setShowRequestHeartbeatModal] = useState(false);
-    const { selectedQueue } = useContext(QueueContext);
+
+    const selectedQueueId = useQueueStore(state => state.selectedQueueId);
 
     return (
         <VStack spacing={2} align={'flex-start'} borderRadius={8} {...props}>
@@ -37,11 +39,11 @@ const QueueManager = ({queueLength, ...props}) => {
             <BroadcastMessageModal
                 isOpen={showBroadcastModal}
                 onClose={() => setShowBroadcastModal(false)}
-                queueId={selectedQueue.id} />
+                queueId={selectedQueueId} />
             <RequestHeartbeatModal
                 isOpen={showRequestHeartbeatModal}
                 onClose={() => setShowRequestHeartbeatModal(false)}
-                queueId={selectedQueue.id}/>
+                queueId={selectedQueueId}/>
         </VStack>
     );
 };

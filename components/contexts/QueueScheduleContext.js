@@ -1,9 +1,9 @@
 import {createContext} from "react";
 
-const QueueContext = createContext({
+const QueueScheduleContext = createContext({
     id: undefined,
     selectedQueueName: undefined,
     status: {}
 });
 
-export default QueueContext;
+export default QueueScheduleContext;

@@ -1,22 +1,20 @@
-import React from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import moment from "moment/moment";
 import {HStack, Icon, Text} from "@chakra-ui/react";
 import {IoTime} from "react-icons/io5";
 
-const OfficeHoursStatusDescriptor = ({queueStatus, ...props}) => {
-    console.log(queueStatus);
-    const currentOfficeHoursDate = queueStatus?.current_event?.start?.dateTime;
-    const nextOfficeHoursDate = queueStatus?.next_event?.start?.dateTime;
+const OfficeHoursStatusDescriptor = ({currentEvents, ...props}) => {
 
     const getOfficeHoursText = () => {
-        if (currentOfficeHoursDate) {
-            const readablUntilOfficeHoursEnd = moment(currentOfficeHoursDate).fromNow();
-            return "Queue is open until " + readablUntilOfficeHoursEnd;
-        } else if (nextOfficeHoursDate) {
-            const readableUntilOfficeHours = moment(nextOfficeHoursDate).fromNow();
+        const {currentEvent, nextEvent} = currentEvents;
+        if (currentEvent) {
+            const readablUntilOfficeHoursEnd = moment(currentEvent.end).fromNow();
+            return "Queue closes " + readablUntilOfficeHoursEnd;
+        } else if (nextEvent) {
+            const readableUntilOfficeHours = moment(nextEvent.start).fromNow();
             return "Queue opens " + readableUntilOfficeHours;
         } else {
-            return "No office hours scheduled today";
+            return "No office hours scheduled soon";
         }
     }
 
