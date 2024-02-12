@@ -27,6 +27,7 @@ const attributeToIcon = {
     'time_requested': IoHourglass,
     'in_waiting_room': IoPauseCircle,
     'being_helped': IoHandRight,
+    'is_online': IoPulse
 }
 
 function QueueWaiter({waiter, onLeaveQueue, onHelpStudent, onPinStudent, ...props}) {
@@ -56,13 +57,22 @@ function QueueWaiter({waiter, onLeaveQueue, onHelpStudent, onPinStudent, ...prop
         }
     }
 
-    const processTopAttribute = (key, value) => {
-        if (key === 'in_waiting_room' && value === true) {
-            return <Icon as={attributeToIcon[key]} boxSize={6} />
-        } else if (key === 'being_helped' && value === true) {
-            return <Icon as={attributeToIcon[key]} boxSize={6} />
+    const processTopAttributes = (attributes) => {
+        const returnElements = []
+
+        if (attributes.in_waiting_room) {
+            returnElements.push(<Icon as={IoPauseCircle} boxSize={6} />)
         }
-        return <></>
+
+        if (attributes.being_helped) {
+            returnElements.push(<Icon as={IoHandRight} boxSize={6} />)
+        }
+
+        if (attributes.is_online !== undefined) {
+            returnElements.push(<Icon as={IoPulse} boxSize={6} color={attributes.is_online ? "green" : "red"} />)
+        }
+
+        return returnElements
     }
 
     return (
@@ -81,10 +91,13 @@ function QueueWaiter({waiter, onLeaveQueue, onHelpStudent, onPinStudent, ...prop
                         {waiter.uniqname && <Text>({waiter.uniqname})</Text>}
                     </HStack>
                     <HStack flex={1} flexDir={'row-reverse'}>
-                        <Fade in><Icon color={'green'} as={IoPulse} boxSize={6} /></Fade>
-                        {Object.entries(waiter.top_attributes).map(([key, value]) =>
-                            <Fade in key={key}>{processTopAttribute(key, value)}</Fade>
-                        )}
+                        {processTopAttributes(waiter.top_attributes).map((icon, i) => {
+                            return (
+                            <Fade in key={i}>
+                                {icon}
+                            </Fade>
+                            );
+                        })}
                     </HStack>
                 </Flex>
 
@@ -162,8 +175,8 @@ function QueueWaiterStaffActions({onHelp, onDone, onPin, onMessage, waiter, ...p
 
 function WaiterAttribute({icon, value, ...props}) {
     return (
-        <HStack {...props}>
-            <Icon as={icon} boxSize={4}/>
+        <HStack>
+            <Icon as={icon} boxSize={4} {...props}/>
             <Text>{value}</Text>
         </HStack>
     );

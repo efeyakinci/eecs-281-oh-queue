@@ -6,10 +6,12 @@ import BroadcastMessageModal from "@/components/oh-queue/modals/BroadcastMessage
 import QueueScheduleContext from "@/components/contexts/QueueScheduleContext";
 import RequestHeartbeatModal from "@/components/oh-queue/modals/RequestHeartbeatModal";
 import useQueueStore from "@/stores/QueueStore";
+import ClearQueueModal from "@/components/oh-queue/modals/ClearQueueModal";
 
 const QueueManager = ({queueLength, ...props}) => {
     const [showBroadcastModal, setShowBroadcastModal] = useState(false);
     const [showRequestHeartbeatModal, setShowRequestHeartbeatModal] = useState(false);
+    const [showClearQueueModal, setShowClearQueueModal] = useState(false);
 
     const selectedQueueId = useQueueStore(state => state.selectedQueueId);
 
@@ -19,7 +21,8 @@ const QueueManager = ({queueLength, ...props}) => {
             <SimpleGrid columns={1} w={'100%'} spacing={4} mt={4}>
                 <Button
                     leftIcon={<Icon as={IoTrash} boxSize={4}/>}
-                    colorScheme={'red'}>
+                    colorScheme={'red'}
+                    onClick={() => setShowClearQueueModal(true)}>
                     Clear Queue
                 </Button>
                 <Button
@@ -43,6 +46,10 @@ const QueueManager = ({queueLength, ...props}) => {
             <RequestHeartbeatModal
                 isOpen={showRequestHeartbeatModal}
                 onClose={() => setShowRequestHeartbeatModal(false)}
+                queueId={selectedQueueId}/>
+            <ClearQueueModal
+                isOpen={showClearQueueModal}
+                onClose={() => setShowClearQueueModal(false)}
                 queueId={selectedQueueId}/>
         </VStack>
     );

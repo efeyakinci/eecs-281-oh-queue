@@ -23,7 +23,8 @@ const QueueEvents = {
     BROADCAST_MESSAGE: 'queue:broadcast_message',
     REQUEST_HEARTBEAT: 'queue:request_heartbeat',
     HEARTBEAT: 'queue:heartbeat',
-    ERROR: 'queue:error'
+    ERROR: 'queue:error',
+    CLEAR_QUEUE: 'queue:clear_queue',
 }
 
 const AuthEvents = {
@@ -171,4 +172,8 @@ export const setErrorMessageHandler = (handler) => {
 
 export const updateSelf = (queueId, uid, data) => {
     socket.emit('queue:update_self', {queue_id: queueId, uid, updated_fields: {...data}});
+}
+
+export const clearQueue = (queueId) => {
+    socket.emit(QueueEvents.CLEAR_QUEUE, {queue_id: queueId});
 }
