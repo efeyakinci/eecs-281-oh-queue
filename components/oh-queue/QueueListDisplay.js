@@ -11,14 +11,17 @@ const QueueListDisplay = ({waiters}) => {
     const loggedInUser = useUserStore(state => state.uniqname);
 
     useEffect(() => {
-        const userInQueue = waiters.some(waiter => waiter.uniqname === loggedInUser);
-        console.log("User in queue", userInQueue)
-        setQueueStatus(status => ({...status, userInQueue}))
-    }, [waiters]);
+        const queueUser = waiters.find(waiter => waiter.uniqname === loggedInUser);
+        if (queueUser !== undefined) {
+            setQueueStatus(status => ({...status, userInQueue: true, signedUpUid: queueUser.uid}));
+        } else {
+            setQueueStatus(status => ({...status, userInQueue: false, signedUpUid: undefined}));
+        }
+    }, [waiters, loggedInUser, setQueueStatus]);
 
     return (
         <AnimatePresence>
-            {waiters.map((person, index) => (
+            {waiters.map((person) => (
                 <MotionBox
                     w={'100%'}
                     key={person.uid}

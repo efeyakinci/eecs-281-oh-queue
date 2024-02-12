@@ -4,7 +4,8 @@ const useQueueStore = create((set) => ({
     selectedQueueId: undefined,
     selectedQueueName: undefined,
     status: {
-        userInQueue: false
+        userInQueue: false,
+        signedUpUid: undefined
     },
 
     setSelectedQueue: (fn) => set(state => {

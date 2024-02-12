@@ -1,7 +1,7 @@
 import React, {useEffect} from 'react';
 import {Flex, Heading, Text, useColorMode, VStack} from "@chakra-ui/react";
 import {MotionBox, MotionFlex, MotionIconButton, MotionVStack} from "@/components/motion-components/motion-components";
-import {ArrowRightIcon} from "@chakra-ui/icons";
+import {ArrowRightIcon, ArrowDownIcon} from "@chakra-ui/icons";
 
 const QueueSelector = ({onToggle, isOpen, selectedQueueId, setSelectedQueueId, availableQueues, ...props}) => {
     const toggleButtonVariants = {
@@ -26,7 +26,7 @@ const QueueSelector = ({onToggle, isOpen, selectedQueueId, setSelectedQueueId, a
         if (selectedQueueId === undefined && Object.keys(availableQueues).length > 0) {
             setSelectedQueueId(Object.keys(availableQueues)[0])
         }
-    }, [selectedQueueId, availableQueues]);
+    }, [selectedQueueId, availableQueues, setSelectedQueueId]);
 
     return (
         <MotionVStack align={'flex-start'} borderRightWidth={'1px'} {...props}>
@@ -58,7 +58,7 @@ const QueueSelector = ({onToggle, isOpen, selectedQueueId, setSelectedQueueId, a
 
                 <VStack w={'100%'} px={4} mt={4}>
                     <VStack w={'100%'} px={2} pb={2} spacing={2} borderLeftWidth={'1px'}>
-                    {Object.keys(availableQueues).map(((key,i) =>
+                    {Object.keys(availableQueues).map(((key) =>
                         <SelectableQueue
                             key={key}
                             queueName={availableQueues[key]}

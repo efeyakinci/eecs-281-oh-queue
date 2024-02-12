@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useRef, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {
     Button,
     FormControl,
@@ -7,20 +7,21 @@ import {
     Heading,
     Icon,
     Input,
-    NumberInput, NumberInputField,
+    NumberInput,
+    NumberInputField,
     Textarea,
+    Tooltip,
     VStack
 } from "@chakra-ui/react";
 import {Formik} from "formik";
 import {IoPersonAdd} from "react-icons/io5";
 import {MotionVStack} from "@/components/motion-components/motion-components";
-import {joinQueue} from "@/service_components/SocketApi";
-import QueueScheduleContext from "@/components/contexts/QueueScheduleContext";
+import {joinQueue, updateSelf} from "@/service_components/SocketApi";
 import OfficeHoursStatusDescriptor from "@/components/oh-queue/OfficeHoursStatusDescriptor";
-import QueueStatusContext from "@/components/contexts/QueueStatusContext";
 import moment from "moment";
 import useDelayedPeriodicUpdate from "@/hooks/useDelayedPeriodicUpdate";
 import useQueueStore from "@/stores/QueueStore";
+import {useUserStore} from "@/stores/UserStore";
 
 const QueueSignup = (props) => {
     const queueStatus = useQueueStore(state => state.status);
@@ -49,8 +50,12 @@ const QueueSignup = (props) => {
         setEventState({currentEvent, nextEvent});
     }
 
-    const onFormSubmit = (values) => {
+    const onJoinQueue = (values) => {
         joinQueue(selectedQueueId, values);
+    }
+
+    const onUpdateSelf = (values) => {
+        updateSelf(selectedQueueId, queueStatus.signedUpUid, {help_description: values.help_description, location: values.location});
     }
 
     useDelayedPeriodicUpdate(getRelevantEvents, 60 * 1000);
@@ -66,7 +71,7 @@ const QueueSignup = (props) => {
                 w={'100%'}
                 currentEvents={eventState}/>
             <Heading>Sign Up</Heading>
-            <Formik initialValues={{help_description: '', location: '', time_requested: 0}} onSubmit={onFormSubmit}>
+            <Formik initialValues={{help_description: '', location: '', time_requested: 0}} onSubmit={queueStatus.userInQueue ? onUpdateSelf : onJoinQueue}>
                 {({values, handleChange, handleBlur, handleSubmit}) => (
                     <QueueSignupForm
                         values={values}
@@ -83,6 +88,8 @@ const QueueSignup = (props) => {
 };
 
 const QueueSignupForm = ({values, handleChange, handleBlur, handleSubmit, queueIsOpen, userInQueue}) => {
+    const userLoggedIn = useUserStore(state => state.isLoggedIn);
+
     return (
         <VStack as={'form'} w={'100%'} spacing={4} align={'flex-start'} onSubmit={handleSubmit}>
             <FormControl>
@@ -110,19 +117,29 @@ const QueueSignupForm = ({values, handleChange, handleBlur, handleSubmit, queueI
 
             <FormControl>
                 <FormLabel>How Long Do You Think It&apos;ll Take?</FormLabel>
-                <NumberInput min={0}>
+                <NumberInput min={0} isDisabled={userInQueue}>
                     <NumberInputField placeholder={5} name={"time_requested"} onChange={handleChange} onBlur={handleBlur}/>
                 </NumberInput>
+                <FormHelperText>(in minutes)</FormHelperText>
                 <FormHelperText>This is so that other students have an idea of how long they might need to wait for.</FormHelperText>
             </FormControl>
 
+            <Tooltip
+                isDisabled={userLoggedIn}
+                label={'You must be logged in to join the queue'}
+                placement={'bottom'}>
             <Button
                 leftIcon={<Icon as={IoPersonAdd} />}
                 type={'submit'}
                 colorScheme={'green'}
-                isDisabled={!values.help_description || !values.location || !queueIsOpen}>
+                isDisabled={!values.help_description
+                    || !values.location
+                    || !queueIsOpen
+                    || (!values.time_requested && !userInQueue)
+                    || !userLoggedIn}>
                 {userInQueue ? "Update" : "Sign Up"}
             </Button>
+            </Tooltip>
         </VStack>
     );
 }

@@ -1,4 +1,4 @@
-import { io } from 'socket.io-client';
+import {io} from 'socket.io-client';
 import {SERVICE_URL} from "@/service_components/ServiceParameters";
 
 const as_response = (event_type) => {
@@ -36,6 +36,17 @@ const socket = io(SERVICE_URL, {
     transports: ['websocket']
 });
 
+socket.on('connect', () => {
+    if (!global?.window) return;
+
+    const creds = localStorage.getItem('credentials');
+
+    if (creds) {
+        const {token} = JSON.parse(creds);
+        tokenLogin(token, () => {});
+    }
+})
+
 export const subscribeToQueue = (queueId) => {
     socket.emit('queue:subscribe', {queue_id: queueId});
 };
@@ -45,9 +56,7 @@ export const unsubscribeFromQueue = (queueId) => {
 }
 
 export const joinQueue = (queueId, {help_description, location, time_requested}) => {
-    socket.emit('queue:join', {queue_id: queueId, help_description, location, time_requested}, ({uid}) => {
-        activeQueues.add(queueId);
-    });
+    socket.emit('queue:join', {queue_id: queueId, help_description, location, time_requested}, () => {});
 }
 
 export const leaveQueue = (queueId, uid) => {
@@ -59,7 +68,6 @@ export const loginWithGoogle = (access_token, login_callback_handler) => {
 }
 
 export const tokenLogin = (token, reauth_callback_handler) => {
-
     socket.emit(AuthEvents.TOKEN_LOGIN, {token}, reauth_callback_handler);
 }
 
@@ -159,4 +167,8 @@ export const setErrorMessageHandler = (handler) => {
     return () => {
         socket.off(QueueEvents.ERROR, handler);
     }
+}
+
+export const updateSelf = (queueId, uid, data) => {
+    socket.emit('queue:update_self', {queue_id: queueId, uid, updated_fields: {...data}});
 }

@@ -1,9 +1,9 @@
 import React, {useEffect} from 'react';
-import {Button, Flex, HStack, Icon, IconButton, Input, Spacer, Text, useColorMode} from "@chakra-ui/react";
+import {Button, Flex, HStack, Icon, IconButton, Text, useColorMode} from "@chakra-ui/react";
 import {useUserStore} from "@/stores/UserStore";
 import {IoMoon, IoPerson} from "react-icons/io5";
-import {GoogleLogin, useGoogleLogin} from "@react-oauth/google";
-import api, {api_client} from "@/service_components/api";
+import {useGoogleLogin} from "@react-oauth/google";
+import {api_client} from "@/service_components/api";
 import {loginWithGoogle, logout, tokenLogin} from "@/service_components/SocketApi";
 
 const Navbar = (props) => {
@@ -17,7 +17,7 @@ const Navbar = (props) => {
             <Flex justify={'flex-end'}>
                 <IconButton
                     aria-label={'color-mode'}
-                    onClick={toggleColorMode}i
+                    onClick={toggleColorMode}
                     icon={<Icon as={IoMoon} boxSize={4}/>}
                     variant={'ghost'}
                     cursor={'pointer'}
@@ -67,7 +67,7 @@ const LoggedOutNavbarContents = (props) => {
             const {token, uniqname, isStaff} = JSON.parse(localStorage.getItem('credentials'));
             onTokenLogin(token);
         }
-    }, []);
+    }, [onTokenLogin]);
 
     return (
         <Button

@@ -13,6 +13,7 @@ import {errorToast} from "@/components/oh-queue/Toasts";
 import useQueueStore from "@/stores/QueueStore";
 import {AnimatePresence} from "framer-motion";
 import {MotionBox} from "@/components/motion-components/motion-components";
+import Head from "next/head";
 
 const QueueList = ({...props}) => {
     const [queueWaiters, setQueueWaiters] = useState([]);
@@ -109,6 +110,9 @@ const QueueList = ({...props}) => {
 
     return (
         <VStack {...props} align={'flex-start'} h={'100%'}>
+            <Head>
+                <title>{queueWaiters.length ? "(" + queueWaiters.length + ")" : ""} EECS Office Hours Queue</title>
+            </Head>
             <Heading>{
                 selectedQueueName ? selectedQueueName : "Select a queue to get started!"
             }</Heading>
