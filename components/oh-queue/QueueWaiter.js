@@ -89,8 +89,6 @@ function QueueWaiter({waiter, onLeaveQueue, onHelpStudent, onPinStudent, ...prop
     const [attributes, setAttributes] = useState(processAttributes(waiter.attributes));
 
     useEffect(() => {
-        waiterRef.current = waiter;
-
         const attributeRefreshInterval = setInterval(() => {
             setAttributes(processAttributes(waiterRef.current.attributes));
         })
@@ -98,7 +96,7 @@ function QueueWaiter({waiter, onLeaveQueue, onHelpStudent, onPinStudent, ...prop
         return () => {
             clearInterval(attributeRefreshInterval);
         }
-    }, [])
+    }, [processAttributes, waiter])
 
     useEffect(() => {
         waiterRef.current = waiter;
