@@ -8,10 +8,10 @@ const OfficeHoursStatusDescriptor = ({currentEvents, ...props}) => {
     const getOfficeHoursText = () => {
         const {currentEvent, nextEvent} = currentEvents;
         if (currentEvent) {
-            const readablUntilOfficeHoursEnd = moment(currentEvent.end).fromNow();
-            return "Queue closes " + readablUntilOfficeHoursEnd;
+            const readableUntilOfficeHoursEnd = moment(currentEvent.end).fromNow();
+            return "Queue closes " + readableUntilOfficeHoursEnd + " (at " + moment(currentEvent.end).format('h:mm a') + ")";
         } else if (nextEvent) {
-            const readableUntilOfficeHours = moment(nextEvent.start).fromNow();
+            const readableUntilOfficeHours = moment(nextEvent.start).fromNow() + " (at " + moment(nextEvent.start).format('h:mm a') + ")";
             return "Queue opens " + readableUntilOfficeHours;
         } else {
             return "No office hours scheduled soon";

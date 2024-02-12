@@ -41,12 +41,18 @@ function QueueWaiter({waiter, onLeaveQueue, onHelpStudent, onPinStudent, ...prop
 
 
     const processAttribute = (key, value) => {
-        if (key === 'sign_up_time') {
-            return moment(value).fromNow();
-        } else if (key === 'time_requested') {
-            return "Expected to take " + value + " minutes";
+        switch (key) {
+            case 'sign_up_time':
+                return <WaiterAttribute key={key} icon={attributeToIcon[key]} value={moment(value).fromNow()} />
+            case 'time_requested':
+                return <WaiterAttribute key={key} icon={attributeToIcon[key]} value={'Expected to take ' + value + ' minutes'} />
+            case 'location':
+                return <WaiterAttribute key={key} icon={attributeToIcon[key]} value={value} />
+            case 'help_description':
+                return <WaiterAttribute key={key} icon={attributeToIcon[key]} value={value} />
+            default:
+                return <></>
         }
-        return value;
     }
 
     const processTopAttribute = (key, value) => {
@@ -82,10 +88,7 @@ function QueueWaiter({waiter, onLeaveQueue, onHelpStudent, onPinStudent, ...prop
                 </Flex>
 
                 {Object.entries(waiter.attributes).map(([key, value]) => (
-                    <HStack key={key}>
-                        <Icon as={attributeToIcon[key]} boxSize={4}/>
-                        <Text>{processAttribute(key, value)}</Text>
-                    </HStack>
+                    processAttribute(key, value)
                 ))}
 
                 {isStaff && <QueueWaiterStaffActions
@@ -152,6 +155,15 @@ function QueueWaiterStaffActions({onHelp, onDone, onPin, onMessage, waiter, ...p
                 colorScheme={'orange'}
                 onClick={() => {window.open(`https://eecs281a.eecs.umich.edu/submission/${waiter.uniqname}`)}}>Autograder</QueueWaiterActionButton>
             </AnimatePresence>
+        </HStack>
+    );
+}
+
+function WaiterAttribute({icon, value, ...props}) {
+    return (
+        <HStack {...props}>
+            <Icon as={icon} boxSize={4}/>
+            <Text>{value}</Text>
         </HStack>
     );
 }

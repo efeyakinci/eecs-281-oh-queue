@@ -39,15 +39,30 @@ const QueueSignup = (props) => {
 
         const {events} = queueStatusRef.current;
 
-        const currentEvent = events.find(event => {
+        events.sort((a, b) => {
+            return moment(a.start).diff(moment(b.start));
+        });
+
+        // If there are events that are back to
+
+        let currentEvent = events.findIndex(event => {
             return moment(event.start).subtract(2, 'seconds').isBefore(moment()) && moment(event.end).isAfter(moment());
         });
+
+        if (currentEvent !== -1 && currentEvent < events.length - 1) {
+            while (
+                moment(events[currentEvent + 1].start).subtract(2, 'seconds')
+                    .isBefore(moment(events[currentEvent].end))
+                ) {
+                currentEvent++;
+            }
+        }
 
         const nextEvent = events.find(event => {
             return moment(event.start).isAfter(moment());
         });
 
-        setEventState({currentEvent, nextEvent});
+        setEventState({currentEvent: events[currentEvent], nextEvent});
     }
 
     const onJoinQueue = (values) => {
