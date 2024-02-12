@@ -20,7 +20,7 @@ const QueueListDisplay = ({waiters}) => {
     }, [waiters, loggedInUser, setQueueStatus]);
 
     return (
-        <AnimatePresence>
+        <>
             {waiters.map((person) => (
                 <MotionBox
                     w={'100%'}
@@ -37,7 +37,7 @@ const QueueListDisplay = ({waiters}) => {
                     />
                 </MotionBox>
             ))}
-        </AnimatePresence>
+        </>
     );
 };
 

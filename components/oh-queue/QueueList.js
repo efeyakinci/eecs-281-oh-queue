@@ -11,7 +11,7 @@ import {useUserStore} from "@/stores/UserStore";
 import QueueListDisplay from "@/components/oh-queue/QueueListDisplay";
 import {errorToast} from "@/components/oh-queue/Toasts";
 import useQueueStore from "@/stores/QueueStore";
-import {AnimatePresence} from "framer-motion";
+import {AnimatePresence, LayoutGroup} from "framer-motion";
 import {MotionBox} from "@/components/motion-components/motion-components";
 import Head from "next/head";
 
@@ -121,14 +121,16 @@ const QueueList = ({...props}) => {
             </HStack>
             <Divider />
             <VStack w={'100%'} spacing={8} mt={4}>
+                <AnimatePresence>
+                <LayoutGroup>
                     <QueueListDisplay
                         waiters={queueWaiters}
                     />
 
-                <AnimatePresence>
                 {queueWaiters.length === 0 &&
                     <EmptyQueueDisplay />
                 }
+                </LayoutGroup>
                 </AnimatePresence>
             </VStack>
         </VStack>
