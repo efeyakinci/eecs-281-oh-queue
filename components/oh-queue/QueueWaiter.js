@@ -1,21 +1,24 @@
-import React, {useContext, useState} from 'react';
-import {Box, Button, Fade, Flex, HStack, Icon, Link, Spacer, Text, VStack} from "@chakra-ui/react";
+import React, {useEffect, useState} from 'react';
+import {Button, Fade, Flex, HStack, Icon, Link, Text, VStack} from "@chakra-ui/react";
 import {
     IoArrowUndoCircle,
-    IoChatbubbleEllipses, IoCheckmarkCircle, IoEnter,
+    IoChatbubbleEllipses,
+    IoCheckmarkCircle,
+    IoEnter,
     IoHandRight,
-    IoHelpCircle, IoHourglass,
-    IoLocation, IoPause, IoPauseCircle,
+    IoHelpCircle,
+    IoHourglass,
+    IoLocation,
+    IoPauseCircle,
     IoPerson,
-    IoPin, IoPulse, IoRemoveCircle,
-    IoTime, IoWifi
+    IoPulse,
+    IoRemoveCircle,
+    IoTime
 } from "react-icons/io5";
 import moment from "moment";
-import {Span} from "next/dist/server/lib/trace/tracer";
-import {AnimatePresence, motion} from "framer-motion";
+import {AnimatePresence} from "framer-motion";
 import {useUserStore} from "@/stores/UserStore";
 import {MotionBox, MotionVStack} from "@/components/motion-components/motion-components";
-import QueueScheduleContext from "@/components/contexts/QueueScheduleContext";
 import {doneHelpingStudent, helpStudent, leaveQueue, markStudentAsWaiting} from "@/service_components/SocketApi";
 import SendMessageModal from "@/components/oh-queue/modals/SendMessageModal";
 import useQueueStore from "@/stores/QueueStore";
@@ -35,6 +38,8 @@ function QueueWaiter({waiter, onLeaveQueue, onHelpStudent, onPinStudent, ...prop
     const isStaff = useUserStore(state => state.isStaff);
     const isLoggedIn = useUserStore(state => state.isLoggedIn);
     const loggedInUniqname = useUserStore(state => state.uniqname);
+
+    const waiterRef = React.useRef(waiter);
 
     const [showMessageModal, setShowMessageModal] = useState(false);
 
@@ -75,6 +80,30 @@ function QueueWaiter({waiter, onLeaveQueue, onHelpStudent, onPinStudent, ...prop
         return returnElements
     }
 
+    const processAttributes = (attributes) => {
+        return Object.entries(attributes).map(([key, value]) => (
+            processAttribute(key, value)
+        ));
+    }
+
+    const [attributes, setAttributes] = useState(processAttributes(waiter.attributes));
+
+    useEffect(() => {
+        waiterRef.current = waiter;
+
+        const attributeRefreshInterval = setInterval(() => {
+            setAttributes(processAttributes(waiterRef.current.attributes));
+        })
+
+        return () => {
+            clearInterval(attributeRefreshInterval);
+        }
+    }, [])
+
+    useEffect(() => {
+        waiterRef.current = waiter;
+    }, [waiter]);
+
     return (
         <MotionVStack
             boxShadow={'md'}
@@ -101,9 +130,7 @@ function QueueWaiter({waiter, onLeaveQueue, onHelpStudent, onPinStudent, ...prop
                     </HStack>
                 </Flex>
 
-                {Object.entries(waiter.attributes).map(([key, value]) => (
-                    processAttribute(key, value)
-                ))}
+                {attributes}
 
                 {isStaff && <QueueWaiterStaffActions
                     onHelp={(help) => helpStudent(selectedQueueId, waiter.uid, help)}

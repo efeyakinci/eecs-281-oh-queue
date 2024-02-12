@@ -7,19 +7,13 @@ import {
     ModalFooter,
     ModalHeader,
     ModalOverlay,
-    NumberDecrementStepper,
-    NumberIncrementStepper,
-    NumberInput,
-    NumberInputField,
-    NumberInputStepper,
     Text,
     VStack
 } from "@chakra-ui/react";
 import React, {useState} from "react";
-import {clearQueue, requestHeartbeat, sendMessage} from "@/service_components/SocketApi";
+import {clearQueue} from "@/service_components/SocketApi";
 
 const SendMessageModal = ({isOpen, onClose, queueId, ...props}) => {
-    const [timeToRespond, setTimeToRespond] = useState(5);
 
     const onClearQueue = () => {
         clearQueue(queueId);
