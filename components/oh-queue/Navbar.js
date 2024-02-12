@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useCallback, useEffect} from 'react';
 import {Button, Flex, HStack, Icon, IconButton, Text, useColorMode} from "@chakra-ui/react";
 import {useUserStore} from "@/stores/UserStore";
 import {IoMoon, IoPerson} from "react-icons/io5";
@@ -29,17 +29,23 @@ const Navbar = (props) => {
 };
 
 const LoggedOutNavbarContents = (props) => {
-    const setUserStoreState = useUserStore(state => state.onLogin);
+    const setLoginData = useUserStore(state => state.onLogin);
+    const setLoggedOut = useUserStore(state => state.onLogout);
 
-    const storeUserData = ({token, uniqname, is_staff: isStaff}) => {
+    const storeUserData = useCallback(({token, uniqname, is_staff: isStaff, error}) => {
+        if (error) {
+            setLoggedOut();
+            return;
+        }
+
         api_client.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-        setUserStoreState({token, uniqname, isStaff});
+        setLoginData({token, uniqname, isStaff});
         localStorage.setItem('credentials', JSON.stringify({token, uniqname, isStaff}));
-    }
+    }, [setLoginData, setLoggedOut]);
 
-    const onTokenLogin = (token) => {
+    const onTokenLogin = useCallback((token) => {
         tokenLogin(token, storeUserData);
-    }
+    }, [storeUserData]);
 
     const onGoogleLogin = async (data) => {
         const google_access_token = data.access_token;
@@ -64,8 +70,10 @@ const LoggedOutNavbarContents = (props) => {
 
     useEffect(() => {
         if (localStorage.getItem('credentials')) {
-            const {token, uniqname, isStaff} = JSON.parse(localStorage.getItem('credentials'));
-            onTokenLogin(token);
+            const {token} = JSON.parse(localStorage.getItem('credentials'));
+            if (token) {
+                onTokenLogin(token);
+            }
         }
     }, [onTokenLogin]);
 
