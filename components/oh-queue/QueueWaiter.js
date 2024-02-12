@@ -41,6 +41,7 @@ function QueueWaiter({waiter, onLeaveQueue, onHelpStudent, onPinStudent, ...prop
 
 
     const processAttribute = (key, value) => {
+        console.log(value)
         switch (key) {
             case 'sign_up_time':
                 return <WaiterAttribute key={key} icon={attributeToIcon[key]} value={moment(value).fromNow()} />
