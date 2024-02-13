@@ -103,8 +103,8 @@ const QueueContainer = (props) => {
 
     const onSelectQueueId = (queueId) => {
         setSelectedQueue(prevQueueSelection => {
-            if (prevQueueSelection.id) {
-                unsubscribeFromQueue(prevQueueSelection.id);
+            if (prevQueueSelection.selectedQueueId) {
+                unsubscribeFromQueue(prevQueueSelection.selectedQueueId);
             }
             subscribeToQueue(queueId);
             return {selectedQueueId: queueId, selectedQueueName: availableQueues[queueId]}
