@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {Button, Fade, Flex, HStack, Icon, Link, Text, VStack} from "@chakra-ui/react";
 import {
     IoArrowUndoCircle,
@@ -80,18 +80,18 @@ function QueueWaiter({waiter, onLeaveQueue, onHelpStudent, onPinStudent, ...prop
         return returnElements
     }
 
-    const processAttributes = (attributes) => {
+    const processAttributes = useCallback((attributes) => {
         return Object.entries(attributes).map(([key, value]) => (
             processAttribute(key, value)
         ));
-    }
+    }, [])
 
     const [attributes, setAttributes] = useState(processAttributes(waiter.attributes));
 
     useEffect(() => {
         const attributeRefreshInterval = setInterval(() => {
             setAttributes(processAttributes(waiterRef.current.attributes));
-        })
+        }, 1000 * 10);
 
         return () => {
             clearInterval(attributeRefreshInterval);
