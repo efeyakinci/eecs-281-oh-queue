@@ -49,8 +49,9 @@ const QueueSignup = (props) => {
             return moment(event.start).subtract(2, 'seconds').isBefore(moment()) && moment(event.end).isAfter(moment());
         });
 
-        if (currentEvent !== -1 && currentEvent < events.length - 1) {
+        if (currentEvent !== -1) {
             while (
+                currentEvent < events.length - 1 &&
                 moment(events[currentEvent + 1].start).subtract(2, 'seconds')
                     .isBefore(moment(events[currentEvent].end))
                 ) {
