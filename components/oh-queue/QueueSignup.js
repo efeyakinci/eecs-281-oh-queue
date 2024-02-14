@@ -43,8 +43,6 @@ const QueueSignup = (props) => {
             return moment(a.start).diff(moment(b.start));
         });
 
-        // If there are events that are back to
-
         let currentEvent = events.findIndex(event => {
             return moment(event.start).subtract(2, 'seconds').isBefore(moment()) && moment(event.end).isAfter(moment());
         });

@@ -117,7 +117,7 @@ function QueueWaiter({waiter, onLeaveQueue, onHelpStudent, onPinStudent, ...prop
                         <Text fontWeight={'bold'}>{waiter.name}</Text>
                         {waiter.uniqname && <Text>({waiter.uniqname})</Text>}
                     </HStack>
-                    <HStack flex={1} flexDir={'row-reverse'}>
+                    <HStack flexDir={'row-reverse'}>
                         {processTopAttributes(waiter.top_attributes).map((icon, i) => {
                             return (
                             <Fade in key={i}>
@@ -129,7 +129,6 @@ function QueueWaiter({waiter, onLeaveQueue, onHelpStudent, onPinStudent, ...prop
                 </Flex>
 
                 {attributes}
-
                 {isStaff && <QueueWaiterStaffActions
                     onHelp={(help) => helpStudent(selectedQueueId, waiter.uid, help)}
                     onDone={() => doneHelpingStudent(selectedQueueId, waiter.uid)}
@@ -156,7 +155,7 @@ function QueueWaiter({waiter, onLeaveQueue, onHelpStudent, onPinStudent, ...prop
 
 function QueueWaiterStaffActions({onHelp, onDone, onPin, onMessage, waiter, ...props}) {
     return (
-        <HStack {...props}>
+        <Flex flexWrap={'wrap'} {...props}>
             <AnimatePresence initial={false}>
             <QueueWaiterActionButton
                 key={'help'}
@@ -194,7 +193,7 @@ function QueueWaiterStaffActions({onHelp, onDone, onPin, onMessage, waiter, ...p
                 colorScheme={'orange'}
                 onClick={() => {window.open(`https://eecs281a.eecs.umich.edu/submission/${waiter.uniqname}`)}}>Autograder</QueueWaiterActionButton>
             </AnimatePresence>
-        </HStack>
+        </Flex>
     );
 }
 
@@ -237,6 +236,7 @@ function QueueWaiterActionButton(props) {
             initial={{opacity: 0}}
             animate={{opacity: 1}}
             exit={{opacity: 0}}
+            m={1}
         >
             <Link>
             <Button
