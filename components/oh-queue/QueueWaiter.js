@@ -46,7 +46,7 @@ function QueueWaiter({waiter, onLeaveQueue, onHelpStudent, onPinStudent, ...prop
     const selectedQueueId = useQueueStore(state => state.selectedQueueId);
 
 
-    const processAttribute = (key, value) => {
+    const processAttribute = useCallback((key, value) => {
         console.log(value)
         switch (key) {
             case 'sign_up_time':
@@ -60,9 +60,9 @@ function QueueWaiter({waiter, onLeaveQueue, onHelpStudent, onPinStudent, ...prop
             default:
                 return <></>
         }
-    }
+    }, [])
 
-    const processTopAttributes = (attributes) => {
+    const processTopAttributes = useCallback((attributes) => {
         const returnElements = []
 
         if (attributes.in_waiting_room) {
@@ -78,20 +78,20 @@ function QueueWaiter({waiter, onLeaveQueue, onHelpStudent, onPinStudent, ...prop
         }
 
         return returnElements
-    }
+    }, []);
 
     const processAttributes = useCallback((attributes) => {
         return Object.entries(attributes).map(([key, value]) => (
             processAttribute(key, value)
         ));
-    }, [])
+    }, [processAttribute])
 
     const [attributes, setAttributes] = useState(processAttributes(waiter.attributes));
 
     useEffect(() => {
         const attributeRefreshInterval = setInterval(() => {
             setAttributes(processAttributes(waiterRef.current.attributes));
-        }, 1000 * 10);
+        }, 1000 * 20);
 
         return () => {
             clearInterval(attributeRefreshInterval);

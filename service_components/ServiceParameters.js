@@ -1,4 +1,4 @@
-export const SERVICE_URL = process.env.NODE_ENV === "development" ?
+export const SERVICE_URL = process.env.NODE_ENV === "development" && process.env.NEXT_PUBLIC_LOCAL_RUN ?
     "http://localhost:8080" :
     "https://eecsohservice.efeakinci.com";
 export const GOOGLE_OAUTH_CLIENT_ID = "308272798456-91fb6rtpvvtif07uaa1k67jibg17ca3b.apps.googleusercontent.com";
