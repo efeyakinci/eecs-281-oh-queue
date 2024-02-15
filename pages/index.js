@@ -1,7 +1,9 @@
 import {useEffect} from "react";
-import {router} from "next/client";
+import {useRouter} from "next/router";
 
 export default function Home() {
+    const router = useRouter();
+
     useEffect(() => {
         router.replace('/queues/');
     })
