@@ -22,6 +22,7 @@ import RespondToHeartbeatModal from "@/components/oh-queue/modals/RespondToHeart
 import QueueStatusContext from "@/components/contexts/QueueStatusContext";
 import useQueueStore from "@/stores/QueueStore";
 import {errorToast} from "@/components/oh-queue/Toasts";
+import {useRouter} from "next/router";
 
 
 const QueueContainer = (props) => {
@@ -54,6 +55,7 @@ const QueueContainer = (props) => {
     }
 
     const toast = useToast();
+    const router = useRouter();
 
     useEffect(() => {
         api.get_queues().then((response) => {
@@ -101,7 +103,9 @@ const QueueContainer = (props) => {
     const selectedQueueId = useQueueStore(state => state.selectedQueueId);
     const setSelectedQueue = useQueueStore(state => state.setSelectedQueue);
 
-    const onSelectQueueId = (queueId) => {
+    const onSelectQueueId = async (queueId) => {
+        await router.replace(`/queues/${queueId}`, `/queues/${queueId}`, {shallow: true})
+
         setSelectedQueue(prevQueueSelection => {
             if (prevQueueSelection.selectedQueueId) {
                 unsubscribeFromQueue(prevQueueSelection.selectedQueueId);

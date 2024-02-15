@@ -148,7 +148,7 @@ const QueueSignupForm = ({values, handleChange, handleBlur, handleSubmit, queueI
                 colorScheme={'green'}
                 isDisabled={!values.help_description
                     || !values.location
-                    || !queueIsOpen
+                    || (!queueIsOpen && !userInQueue)
                     || (!values.time_requested && !userInQueue)
                     || !userLoggedIn}>
                 {userInQueue ? "Update" : "Sign Up"}

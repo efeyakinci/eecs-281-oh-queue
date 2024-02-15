@@ -47,7 +47,6 @@ function QueueWaiter({waiter, onLeaveQueue, onHelpStudent, onPinStudent, ...prop
 
 
     const processAttribute = useCallback((key, value) => {
-        console.log(value)
         switch (key) {
             case 'sign_up_time':
                 return <WaiterAttribute key={key} icon={attributeToIcon[key]} value={moment(value).fromNow()} />
@@ -58,7 +57,7 @@ function QueueWaiter({waiter, onLeaveQueue, onHelpStudent, onPinStudent, ...prop
             case 'help_description':
                 return <WaiterAttribute key={key} icon={attributeToIcon[key]} value={value} />
             default:
-                return <></>
+                return null;
         }
     }, [])
 
@@ -89,6 +88,8 @@ function QueueWaiter({waiter, onLeaveQueue, onHelpStudent, onPinStudent, ...prop
     const [attributes, setAttributes] = useState(processAttributes(waiter.attributes));
 
     useEffect(() => {
+        setAttributes(processAttributes(waiter.attributes));
+
         const attributeRefreshInterval = setInterval(() => {
             setAttributes(processAttributes(waiterRef.current.attributes));
         }, 1000 * 20);
@@ -100,7 +101,7 @@ function QueueWaiter({waiter, onLeaveQueue, onHelpStudent, onPinStudent, ...prop
 
     useEffect(() => {
         waiterRef.current = waiter;
-    }, [waiter]);
+    }, [waiter])
 
     return (
         <MotionVStack

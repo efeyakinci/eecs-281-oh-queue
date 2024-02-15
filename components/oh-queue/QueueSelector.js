@@ -1,32 +1,42 @@
 import React, {useEffect} from 'react';
 import {Flex, Heading, Text, useColorMode, VStack} from "@chakra-ui/react";
 import {MotionBox, MotionFlex, MotionIconButton, MotionVStack} from "@/components/motion-components/motion-components";
-import {ArrowRightIcon, ArrowDownIcon} from "@chakra-ui/icons";
+import {ArrowRightIcon} from "@chakra-ui/icons";
+import {useRouter} from "next/router";
+
+const toggleButtonVariants = {
+    "closed": {
+        rotate: 0
+    },
+    "open": {
+        rotate: 180
+    }
+};
+
+const toggleContentVariants = {
+    "closed": {
+        opacity: 0
+    },
+    "open": {
+        opacity: 1
+    }
+};
 
 const QueueSelector = ({onToggle, isOpen, selectedQueueId, setSelectedQueueId, availableQueues, ...props}) => {
-    const toggleButtonVariants = {
-        "closed": {
-            rotate: 0
-        },
-        "open": {
-            rotate: 180
-        }
-    };
-
-    const toggleContentVariants = {
-        "closed": {
-            opacity: 0
-        },
-        "open": {
-            opacity: 1
-        }
-    };
+    const router = useRouter();
 
     useEffect(() => {
+        if (!router.isReady) return;
+
         if (selectedQueueId === undefined && Object.keys(availableQueues).length > 0) {
-            setSelectedQueueId(Object.keys(availableQueues)[0])
+            const availableQueueIds = Object.keys(availableQueues);
+            if (router.query?.queueId && availableQueueIds.includes(router.query.queueId)) {
+                setSelectedQueueId(router.query.queueId);
+            } else {
+                setSelectedQueueId(availableQueueIds[0])
+            }
         }
-    }, [selectedQueueId, availableQueues, setSelectedQueueId]);
+    }, [selectedQueueId, availableQueues, setSelectedQueueId, router.isReady, router.query?.queueId]);
 
     return (
         <MotionVStack align={'flex-start'} borderRightWidth={'1px'} {...props}>
