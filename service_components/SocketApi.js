@@ -22,6 +22,7 @@ const QueueEvents = {
     RECEIVE_MESSAGE: 'queue:receive_message',
     BROADCAST_MESSAGE: 'queue:broadcast_message',
     REQUEST_HEARTBEAT: 'queue:request_heartbeat',
+    UPDATE_SELF: 'queue:update_self',
     HEARTBEAT: 'queue:heartbeat',
     ERROR: 'queue:error',
     CLEAR_QUEUE: 'queue:clear_queue',
