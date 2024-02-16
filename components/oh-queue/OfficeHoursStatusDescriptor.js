@@ -34,9 +34,11 @@ const OfficeHoursStatusDescriptor = ({currentEvents, override, ...props}) => {
 
         if (override.type === "open") {
             return <Text fontWeight={'bold'} color={colorModeGreen}>Queue is manually open until {overrideEnd.format('h:mm a')}</Text>
-        } else {
+        } else if (override.type === "close") {
             return <Text fontWeight={'bold'} color={colorModeRed}>Queue is manually closed until {overrideEnd.format('h:mm a')}</Text>
         }
+
+        return undefined;
     }
 
     const overrideText = getOverrideText();

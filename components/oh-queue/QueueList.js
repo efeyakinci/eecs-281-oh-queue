@@ -91,7 +91,7 @@ const QueueList = ({...props}) => {
             });
 
             if (data.queue_status) {
-                setQueueStatus((status) => ({...status, ...data.queue_status}));
+                setQueueStatus((status) => ({...status, ...data.queue_status, override: data.queue_status.override}));
             }
         }
 
