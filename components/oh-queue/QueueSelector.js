@@ -26,7 +26,9 @@ const QueueSelector = ({onToggle, isOpen, selectedQueueId, setSelectedQueueId, a
     const router = useRouter();
 
     useEffect(() => {
-        if (!router.isReady) return;
+        if (!router.isReady) {
+            return;
+        }
 
         if (selectedQueueId === undefined && Object.keys(availableQueues).length > 0) {
             const availableQueueIds = Object.keys(availableQueues);

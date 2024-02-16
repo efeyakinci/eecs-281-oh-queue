@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {
     Button,
     FormControl,
@@ -26,13 +26,15 @@ import {useUserStore} from "@/stores/UserStore";
 const QueueSignup = (props) => {
     const queueStatus = useQueueStore(state => state.status);
     const selectedQueueId = useQueueStore(state => state.selectedQueueId);
+    const isQueueOpen = useQueueStore(state => state.isQueueOpen);
 
     const [eventState, setEventState] = useState({});
+    const [queueIsOpen, setQueueIsOpen] = useState(false);
 
     const queueStatusRef = useRef(queueStatus);
 
 
-    const getRelevantEvents = () => {
+    const getRelevantEvents = useCallback(() => {
         if (!queueStatusRef.current || !queueStatusRef.current.events) {
             return;
         }
@@ -61,8 +63,9 @@ const QueueSignup = (props) => {
             return moment(event.start).isAfter(moment());
         });
 
+        setQueueIsOpen(isQueueOpen(moment()));
         setEventState({currentEvent: events[currentEvent], nextEvent});
-    }
+    }, [isQueueOpen, queueStatusRef]);
 
     const onJoinQueue = (values) => {
         joinQueue(selectedQueueId, values);
@@ -77,12 +80,13 @@ const QueueSignup = (props) => {
     useEffect(() => {
         queueStatusRef.current = queueStatus;
         getRelevantEvents();
-    }, [queueStatus]);
+    }, [getRelevantEvents, queueStatus]);
 
     return (
         <MotionVStack {...props} align={'flex-start'}>
             <OfficeHoursStatusDescriptor
                 w={'100%'}
+                override={queueStatus.override}
                 currentEvents={eventState}/>
             <Heading>Sign Up</Heading>
             <Formik initialValues={{help_description: '', location: '', time_requested: 0}} onSubmit={queueStatus.userInQueue ? onUpdateSelf : onJoinQueue}>
@@ -92,7 +96,7 @@ const QueueSignup = (props) => {
                         handleChange={handleChange}
                         handleBlur={handleBlur}
                         handleSubmit={handleSubmit}
-                        queueIsOpen={eventState.currentEvent !== undefined}
+                        queueIsOpen={queueIsOpen}
                         userInQueue={queueStatus.userInQueue}
                     />
                 )}
@@ -150,7 +154,8 @@ const QueueSignupForm = ({values, handleChange, handleBlur, handleSubmit, queueI
                     || !values.location
                     || (!queueIsOpen && !userInQueue)
                     || (!values.time_requested && !userInQueue)
-                    || !userLoggedIn}>
+                    || !userLoggedIn
+            }>
                 {userInQueue ? "Update" : "Sign Up"}
             </Button>
             </Tooltip>

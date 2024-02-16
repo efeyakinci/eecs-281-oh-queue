@@ -103,9 +103,7 @@ const QueueContainer = (props) => {
     const selectedQueueId = useQueueStore(state => state.selectedQueueId);
     const setSelectedQueue = useQueueStore(state => state.setSelectedQueue);
 
-    const onSelectQueueId = async (queueId) => {
-        await router.replace(`/queues/${queueId}`, `/queues/${queueId}`, {shallow: true})
-
+    const onSelectQueueId = (queueId) => {
         setSelectedQueue(prevQueueSelection => {
             if (prevQueueSelection.selectedQueueId) {
                 unsubscribeFromQueue(prevQueueSelection.selectedQueueId);
@@ -113,6 +111,7 @@ const QueueContainer = (props) => {
             subscribeToQueue(queueId);
             return {selectedQueueId: queueId, selectedQueueName: availableQueues[queueId]}
         });
+        router.replace(`/queues/${queueId}`, `/queues/${queueId}`, {shallow: true});
     }
 
 

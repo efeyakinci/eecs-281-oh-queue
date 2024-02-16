@@ -1,15 +1,5 @@
 import React from 'react';
-import {
-    Button,
-    Modal,
-    ModalBody,
-    ModalCloseButton,
-    ModalContent,
-    ModalFooter,
-    ModalHeader,
-    ModalOverlay,
-    Text
-} from "@chakra-ui/react";
+import {Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Text} from "@chakra-ui/react";
 import {sendHeartbeat} from "@/service_components/SocketApi";
 import moment from "moment";
 
@@ -23,7 +13,7 @@ const MessageReceivedModal = ({requestData, isOpen, onClose, ...props}) => {
     const readableTime = requestData ? moment(requestData.heartbeat_deadline).format("h:mm a") : "";
 
     return (
-        <Modal isOpen={isOpen} onClose={onClose}>
+        <Modal isOpen={isOpen} onClose={onClose} closeOnOverlayClick={false}>
             <ModalOverlay />
             <ModalContent>
                 <ModalHeader>Are you still there?</ModalHeader>

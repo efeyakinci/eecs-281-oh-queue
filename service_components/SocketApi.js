@@ -25,6 +25,7 @@ const QueueEvents = {
     HEARTBEAT: 'queue:heartbeat',
     ERROR: 'queue:error',
     CLEAR_QUEUE: 'queue:clear_queue',
+    OVERRIDE_QUEUE_SCHEDULE: 'queue:override_queue_schedule',
 }
 
 const AuthEvents = {
@@ -171,9 +172,17 @@ export const setErrorMessageHandler = (handler) => {
 }
 
 export const updateSelf = (queueId, uid, data) => {
-    socket.emit('queue:update_self', {queue_id: queueId, uid, updated_fields: {...data}});
+    socket.emit(QueueEvents.UPDATE_SELF, {queue_id: queueId, uid, updated_fields: {...data}});
 }
 
 export const clearQueue = (queueId) => {
     socket.emit(QueueEvents.CLEAR_QUEUE, {queue_id: queueId});
+}
+
+export const overrideQueueSchedule = (queueId, override_type, from_date_time, to_date_time) => {
+    socket.emit(QueueEvents.OVERRIDE_QUEUE_SCHEDULE, {queue_id: queueId, override: {
+        type: override_type,
+        from_date_time,
+        to_date_time
+    }});
 }

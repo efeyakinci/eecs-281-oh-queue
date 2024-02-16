@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useState} from 'react';
-import {Divider, Heading, HStack, Icon, Image, Text, useToast, VStack} from "@chakra-ui/react";
+import {Divider, Heading, HStack, Icon, Image, Text, useColorModeValue, useToast, VStack} from "@chakra-ui/react";
 import {IoSchool} from "react-icons/io5";
 import {
     requestItemInfo,
@@ -138,6 +138,8 @@ const QueueList = ({...props}) => {
 };
 
 function EmptyQueueDisplay() {
+    const grayTextColor = useColorModeValue('gray.500', 'gray.400')
+
     return (
             <MotionBox
                 initial={{opacity: 0}}
@@ -145,7 +147,7 @@ function EmptyQueueDisplay() {
                 exit={{opacity: 0}}
             >
                 <VStack w={'100%'} align={'center'} spacing={4}>
-                    <Heading size={'sm'} fontWeight={'bold'} color={'gray'}>It&apos;s a little lonely in here...</Heading>
+                    <Heading size={'sm'} fontWeight={'bold'} color={grayTextColor}>It&apos;s a little lonely in here...</Heading>
                     <Image
                         alt={'Empty queue'}
                         borderRadius={32}

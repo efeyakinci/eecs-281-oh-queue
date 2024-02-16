@@ -1,9 +1,11 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React from 'react';
 import moment from "moment/moment";
-import {HStack, Icon, Text} from "@chakra-ui/react";
-import {IoTime} from "react-icons/io5";
+import {HStack, Icon, Text, useColorModeValue, VStack} from "@chakra-ui/react";
+import {IoTime, IoWarning} from "react-icons/io5";
 
-const OfficeHoursStatusDescriptor = ({currentEvents, ...props}) => {
+const OfficeHoursStatusDescriptor = ({currentEvents, override, ...props}) => {
+    const colorModeGreen = useColorModeValue('green.500', 'green.300');
+    const colorModeRed = useColorModeValue('red.500', 'red.300');
 
     const getOfficeHoursText = () => {
         const {currentEvent, nextEvent} = currentEvents;
@@ -18,10 +20,32 @@ const OfficeHoursStatusDescriptor = ({currentEvents, ...props}) => {
         }
     }
 
+    const getOverrideText = () => {
+        if (!override) {
+            return undefined;
+        }
+
+        const overrideStart = moment.unix(override.from_date_time);
+        const overrideEnd = moment.unix(override.to_date_time);
+
+        if (!moment().isBetween(overrideStart, overrideEnd)) {
+            return undefined;
+        }
+
+        if (override.type === "open") {
+            return <Text fontWeight={'bold'} color={colorModeGreen}>Queue is manually open until {overrideEnd.format('h:mm a')}</Text>
+        } else {
+            return <Text fontWeight={'bold'} color={colorModeRed}>Queue is manually closed until {overrideEnd.format('h:mm a')}</Text>
+        }
+    }
+
+    const overrideText = getOverrideText();
+
     return (
-        <HStack {...props}>
-            <Icon as={IoTime} boxSize={4} /> <Text>{getOfficeHoursText()}</Text>
-        </HStack>
+        <VStack {...props} align={'flex-start'}>
+            {overrideText && <HStack><Icon as={IoWarning} boxSize={4} /> {overrideText}</HStack>}
+            <HStack><Icon as={IoTime} boxSize={4} /> <Text>{getOfficeHoursText()}</Text></HStack>
+        </VStack>
     );
 };
 

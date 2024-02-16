@@ -1,17 +1,17 @@
-import React, {useContext, useState} from 'react';
-import {Button, HStack, Icon, SimpleGrid, VStack, Text, Heading, Divider} from "@chakra-ui/react";
-import {IoFitness, IoMegaphone, IoPerson, IoTrash} from "react-icons/io5";
-import OfficeHoursStatusDescriptor from "@/components/oh-queue/OfficeHoursStatusDescriptor";
+import React, {useState} from 'react';
+import {Button, Heading, Icon, SimpleGrid, VStack} from "@chakra-ui/react";
+import {IoFitness, IoMegaphone, IoTime, IoTrash} from "react-icons/io5";
 import BroadcastMessageModal from "@/components/oh-queue/modals/BroadcastMessageModal";
-import QueueScheduleContext from "@/components/contexts/QueueScheduleContext";
 import RequestHeartbeatModal from "@/components/oh-queue/modals/RequestHeartbeatModal";
 import useQueueStore from "@/stores/QueueStore";
 import ClearQueueModal from "@/components/oh-queue/modals/ClearQueueModal";
+import ManualQueueOpenCloseModal from "@/components/oh-queue/modals/ManualQueueOpenCloseModal";
 
 const QueueManager = ({queueLength, ...props}) => {
     const [showBroadcastModal, setShowBroadcastModal] = useState(false);
     const [showRequestHeartbeatModal, setShowRequestHeartbeatModal] = useState(false);
     const [showClearQueueModal, setShowClearQueueModal] = useState(false);
+    const [showManualQueueOpenCloseModal, setShowManualQueueOpenCloseModal] = useState(false);
 
     const selectedQueueId = useQueueStore(state => state.selectedQueueId);
 
@@ -37,6 +37,12 @@ const QueueManager = ({queueLength, ...props}) => {
                     onClick={() => setShowRequestHeartbeatModal(true)}>
                     Ask for Heartbeat
                 </Button>
+                <Button
+                    leftIcon={<Icon as={IoTime} boxSize={4}/>}
+                    colorScheme={'orange'}
+                    onClick={() => {setShowManualQueueOpenCloseModal(true)}}>
+                    Manually Open/Close Queue
+                </Button>
             </SimpleGrid>
 
             <BroadcastMessageModal
@@ -50,6 +56,10 @@ const QueueManager = ({queueLength, ...props}) => {
             <ClearQueueModal
                 isOpen={showClearQueueModal}
                 onClose={() => setShowClearQueueModal(false)}
+                queueId={selectedQueueId}/>
+            <ManualQueueOpenCloseModal
+                isOpen={showManualQueueOpenCloseModal}
+                onClose={() => setShowManualQueueOpenCloseModal(false)}
                 queueId={selectedQueueId}/>
         </VStack>
     );
