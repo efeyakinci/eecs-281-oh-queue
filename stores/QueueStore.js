@@ -7,7 +7,7 @@ const useQueueStore = create((set, get) => ({
     status: {
         userInQueue: false,
         signedUpUid: undefined,
-        currentEvents: [],
+        events: [],
         override: undefined
     },
 
@@ -23,7 +23,7 @@ const useQueueStore = create((set, get) => ({
 
     isQueueOpen: (atTime) => {
         const override = get().status.override;
-        const currentEvents = get().status.currentEvents;
+        const events = get().status.events;
 
         if (override && override.type === "open") {
             if (atTime.isBetween(moment.unix(override.from_date_time), moment.unix(override.to_date_time))) {
@@ -37,11 +37,11 @@ const useQueueStore = create((set, get) => ({
             }
         }
 
-        if (currentEvents.length === 0) {
+        if (events.length === 0) {
             return false;
         }
 
-        const currentEvent = currentEvents.find(event => {
+        const currentEvent = events.find(event => {
             return moment(event.start).subtract(2, 'seconds').isBefore(atTime) && moment(event.end).isAfter(atTime);
         });
 

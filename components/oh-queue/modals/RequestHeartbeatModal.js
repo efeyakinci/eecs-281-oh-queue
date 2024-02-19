@@ -41,7 +41,7 @@ const SendMessageModal = ({isOpen, onClose, queueId, ...props}) => {
                         <NumberInput
                             defaultValue={8}
                             min={1}
-                            max={20}
+                            max={40}
                             onChange={setTimeToRespond}>
                             <NumberInputField/>
                             <NumberInputStepper>

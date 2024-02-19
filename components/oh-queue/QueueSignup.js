@@ -33,7 +33,6 @@ const QueueSignup = (props) => {
 
     const queueStatusRef = useRef(queueStatus);
 
-
     const getRelevantEvents = useCallback(() => {
         if (!queueStatusRef.current || !queueStatusRef.current.events) {
             return;
