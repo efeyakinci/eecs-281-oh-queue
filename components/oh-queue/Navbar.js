@@ -14,6 +14,7 @@ const Navbar = (props) => {
     const { colorMode, toggleColorMode} = useColorMode();
 
     const reconnectHandler = useCallback(() => {
+        console.log('reconnect handler called')
         const creds = localStorage.getItem('credentials');
 
         if (creds) {

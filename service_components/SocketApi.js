@@ -51,10 +51,12 @@ socket.on('connect', () => {
 })
 
 export const setOnReconnect = (handler) => {
+    socket.on('connect', handler);
     socket.on('reconnect', handler);
 
     return () => {
         socket.off('reconnect', handler);
+        socket.off('connect', handler);
     }
 }
 
