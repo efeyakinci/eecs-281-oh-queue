@@ -4,11 +4,41 @@ import {useUserStore} from "@/stores/UserStore";
 import {IoMoon, IoPerson} from "react-icons/io5";
 import {useGoogleLogin} from "@react-oauth/google";
 import {api_client} from "@/service_components/api";
-import {loginWithGoogle, logout, tokenLogin} from "@/service_components/SocketApi";
+import {loginWithGoogle, logout, setOnReconnect, subscribeToQueue, tokenLogin} from "@/service_components/SocketApi";
+import useQueueStore from "@/stores/QueueStore";
 
 const Navbar = (props) => {
     const uniqname = useUserStore(state => state.uniqname);
+    const selectedQueueId = useQueueStore(state => state.selectedQueueId);
+
     const { colorMode, toggleColorMode} = useColorMode();
+
+    const reconnectHandler = useCallback(() => {
+        const creds = localStorage.getItem('credentials');
+
+        if (creds) {
+            const {token} = JSON.parse(creds);
+            tokenLogin(token, () => {});
+        }
+
+        if (selectedQueueId) {
+            subscribeToQueue(selectedQueueId);
+        }
+    }, [selectedQueueId]);
+
+    useEffect(() => {
+        reconnectHandler();
+    }, []);
+
+
+
+    useEffect(() => {
+        const cleanup = setOnReconnect(reconnectHandler);
+
+        return () => {
+            cleanup();
+        }
+    }, [reconnectHandler]);
 
     return (
         <Flex justify={'space-between'} align={'center'} py={4} px={16} shadow={'base'} {...props}>

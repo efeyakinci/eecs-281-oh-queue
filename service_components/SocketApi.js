@@ -50,6 +50,14 @@ socket.on('connect', () => {
     }
 })
 
+export const setOnReconnect = (handler) => {
+    socket.on('reconnect', handler);
+
+    return () => {
+        socket.off('reconnect', handler);
+    }
+}
+
 export const subscribeToQueue = (queueId) => {
     socket.emit('queue:subscribe', {queue_id: queueId});
 };
@@ -161,7 +169,7 @@ export const setOnHeartbeat = (handler) => {
 }
 
 export const sendHeartbeat = (requestId) => {
-    socket.emit(QueueEvents.HEARTBEAT, {request_id: requestId});
+    socket.emit(QueueEvents.HEARTBEAT, {request_id: [requestId]});
 }
 
 export const setErrorMessageHandler = (handler) => {
