@@ -3,7 +3,7 @@ import {Divider, Heading, HStack, Icon, Image, Text, useColorModeValue, useToast
 import {IoSchool} from "react-icons/io5";
 import {
     requestItemInfo,
-    requestQueueUpdate,
+    requestQueueUpdate, setOnReconnect,
     setQueueDataUpdateHandler,
     setQueueUpdateHandler
 } from "@/service_components/SocketApi";
@@ -70,6 +70,20 @@ const QueueList = ({...props}) => {
             requestItemInfo(selectedQueueId, unknownItems, queueInfoUpdateHandler);
         }
     }, [selectedQueueId, waiterIndices, waiterInfos, queueInfoUpdateHandler]);
+
+    useEffect(() => {
+        const cleanup = setOnReconnect(() => {
+            if (!selectedQueueId) return;
+
+            setWaiterInfos({});
+            setWaiterIndices({});
+            requestQueueUpdate(selectedQueueId);
+        })
+
+        return () => {
+            cleanup();
+        }
+    }, [selectedQueueId, setWaiterInfos, setWaiterIndices]);
 
     useEffect(() => {
         if (!selectedQueueId) return;
