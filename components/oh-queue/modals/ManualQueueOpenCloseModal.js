@@ -1,5 +1,5 @@
 import {
-    Button,
+    Button, Flex,
     Heading,
     Input,
     Modal,
@@ -33,57 +33,87 @@ const ManualQueueOpenCloseModal = ({queueId, isOpen, onClose, ...props}) => {
         <Modal isOpen={isOpen} onClose={onClose}>
             <ModalOverlay/>
             <ModalContent>
-                <Formik initialValues={{override_type: "close", from_date_time: moment().format("YYYY-MM-DDTHH:mm"), to_date_time: moment().add(30, 'minutes').format("YYYY-MM-DDTHH:mm")}}
+                <Formik initialValues={{
+                    override_type: "open",
+                    from_date_time: moment().format("YYYY-MM-DDTHH:mm"),
+                    to_date_time: moment().add(30, 'minutes').format("YYYY-MM-DDTHH:mm")
+                }}
                         onSubmit={onOverrideQueue}>
-                {({values, handleChange, handleBlur, handleSubmit}) => (
-                    <>
-                <ModalHeader>Manually Open/Close Queue</ModalHeader>
-                <ModalCloseButton/>
-                <ModalBody>
-                    <Text> If you would like to manually open or close the queue during a certain time, this is the
-                        place to be!</Text>
-                            <form onSubmit={handleSubmit}>
-                                <VStack mt={4} align={'flex-start'} spacing={4}>
-                                    <Heading size={'md'}> Open or Close the Queue?</Heading>
-                                    <RadioGroup name={'override_type'} onChange={(e) => handleChange({target: {name: 'override_type', value: e}})} onBlur={handleBlur} value={values.override_type}>
-                                        <VStack>
-                                            <Radio value="close">
-                                                Close
-                                            </Radio>
-                                            <Radio value="open">
-                                                Open
-                                            </Radio>
-                                        </VStack>
-                                    </RadioGroup>
+                    {({values, handleChange, handleBlur, handleSubmit}) => (
+                        <>
+                            <ModalHeader>Manually Open/Close Queue</ModalHeader>
+                            <ModalCloseButton/>
+                            <ModalBody>
+                                <Text> If you would like to manually open or close the queue during a certain time, this
+                                    is the
+                                    place to be!</Text>
+                                <form onSubmit={handleSubmit}>
+                                    <VStack mt={4} align={'flex-start'} spacing={4}>
+                                        <Heading size={'md'}> Open or Close the Queue?</Heading>
+                                        <Flex flexDir={'row'} w={'100%'} justify={'space-between'}>
+                                            <SelectionButton
+                                                value={'open'}
+                                                selectedValue={values.override_type}
+                                                borderRadius={8}
+                                                onClick={() => handleChange({target: {name: 'override_type', value: 'open'}})}
+                                                flex={8}>
+                                                <Text fontWeight={'bold'}>Open</Text>
+                                            </SelectionButton>
+                                            <Flex flex={1}/>
+                                            <SelectionButton
+                                                value={'close'}
+                                                selectedValue={values.override_type}
+                                                borderRadius={8}
+                                                onClick={() => handleChange({target: {name: 'override_type', value: 'close'}})}
+                                                flex={8}>
+                                                <Text fontWeight={'bold'}>Close</Text>
+                                            </SelectionButton>
+                                        </Flex>
+                                        <Heading size={'sm'}> From</Heading>
+                                        <Input
+                                            type={'datetime-local'}
+                                            name={'from_date_time'}
+                                            value={values.from_date_time}
+                                            onChange={handleChange}
+                                            onBlur={handleBlur}/>
 
-                                    <Heading size={'sm'}> From</Heading>
-                                    <Input
-                                        type={'datetime-local'}
-                                        name={'from_date_time'}
-                                        value={values.from_date_time}
-                                        onChange={handleChange}
-                                        onBlur={handleBlur} />
-
-                                    <Heading size={'sm'}> To</Heading>
-                                    <Input
-                                        type={'datetime-local'}
-                                        name={'to_date_time'}
-                                        value={values.to_date_time}
-                                        onChange={handleChange}
-                                        onBlur={handleBlur} />
-                                </VStack>
-                            </form>
-                </ModalBody>
-                <ModalFooter>
-                    <Button onClick={handleSubmit} colorScheme="yellow" mr={4}>Apply Override!</Button>
-                    <Button onClick={onClose}>Close</Button>
-                </ModalFooter>
-                </>
-            )}
+                                        <Heading size={'sm'}> To</Heading>
+                                        <Input
+                                            type={'datetime-local'}
+                                            name={'to_date_time'}
+                                            value={values.to_date_time}
+                                            onChange={handleChange}
+                                            onBlur={handleBlur}/>
+                                    </VStack>
+                                </form>
+                            </ModalBody>
+                            <ModalFooter>
+                                <Button onClick={handleSubmit} colorScheme="orange" mr={4}>Apply Override!</Button>
+                                <Button onClick={onClose}>Close</Button>
+                            </ModalFooter>
+                        </>
+                    )}
                 </Formik>
             </ModalContent>
         </Modal>
     );
 };
+
+const SelectionButton = ({value, selectedValue, onClick, children, ...props}) => {
+    return (
+        <Flex justify={'center'}
+              cursor={'pointer'}
+              p={4}
+              borderWidth={1}
+              borderColor={selectedValue === value ? 'orange.200' : 'gray.200'}
+              borderRadius={8}
+              bg={selectedValue === value ? 'orange.200' : 'white'}
+              transition={'all 0.1s ease-in-out'}
+              onClick={onClick}
+            {...props}>
+            {children}
+        </Flex>
+    );
+}
 
 export default ManualQueueOpenCloseModal;

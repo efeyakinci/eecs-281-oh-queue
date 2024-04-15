@@ -57,7 +57,11 @@ const QueueContainer = (props) => {
     const toast = useToast();
     const router = useRouter();
 
+    const canShowNotifications = !("Notification" in window);
+
     const checkNotificationPermission = () => {
+        if (!canShowNotifications) return;
+
         if (Notification.permission === 'default') {
             Notification.requestPermission();
             toast({
@@ -73,7 +77,7 @@ const QueueContainer = (props) => {
         const warningShown = parseInt(localStorage.getItem('notificationWarningShown')) || 0;
 
 
-        if (Notification.permission === 'denied' && warningShown < 3) {
+        if (canShowNotifications && Notification.permission === 'denied' && warningShown < 3) {
             toast({
                 title: "Notifications",
                 description: "You have disabled notifications. Keep an eye out on the queue for messages that may require you to respond for you to keep your spot in line!",
@@ -109,7 +113,7 @@ const QueueContainer = (props) => {
                 isMessageReceived: true
             });
 
-            if (Notification.permission === 'granted') {
+            if (canShowNotifications && Notification.permission === 'granted') {
                 console.log("Sending notification");
                 new Notification('Message Received', {
                     body: 'Message from staff: ' + data.message,
@@ -124,7 +128,7 @@ const QueueContainer = (props) => {
                 heartbeatRequest: data
             });
 
-            if (Notification.permission === 'granted') {
+            if (canShowNotifications && Notification.permission === 'granted') {
                 console.log("Sending notification");
                 new Notification('Heartbeat Request', {
                     body: 'Go back to the queue and acknowledge the request to keep your spot in line!',
