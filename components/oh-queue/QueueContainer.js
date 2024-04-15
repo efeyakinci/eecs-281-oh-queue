@@ -70,7 +70,10 @@ const QueueContainer = (props) => {
             });
         }
 
-        if (Notification.permission === 'denied') {
+        const warningShown = parseInt(localStorage.getItem('notificationWarningShown')) || 0;
+
+
+        if (Notification.permission === 'denied' && warningShown < 3) {
             toast({
                 title: "Notifications",
                 description: "You have disabled notifications. Keep an eye out on the queue for messages that may require you to respond for you to keep your spot in line!",
@@ -79,6 +82,9 @@ const QueueContainer = (props) => {
                 duration: 5000,
                 isClosable: true
             });
+
+            const warningShown = localStorage.getItem('notificationWarningShown') || 0;
+            localStorage.setItem('notificationWarningShown', warningShown + 1);
         }
     }
 
