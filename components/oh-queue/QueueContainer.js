@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 import {Box, Divider, Flex, useToast, VStack} from "@chakra-ui/react";
 import QueueList from "@/components/oh-queue/QueueList";
 import QueueAnnouncements from "@/components/oh-queue/QueueAnnouncements";
@@ -57,7 +57,9 @@ const QueueContainer = (props) => {
     const toast = useToast();
     const router = useRouter();
 
-    const canShowNotifications = !("Notification" in window);
+    const canShowNotifications = useMemo(() => {
+        return typeof Notification !== 'undefined';
+    }, []);
 
     const checkNotificationPermission = () => {
         if (!canShowNotifications) return;
