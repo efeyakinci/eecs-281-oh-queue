@@ -70,6 +70,16 @@ const QueueContainer = (props) => {
             });
         }
 
+        if (Notification.permission === 'denied') {
+            toast({
+                title: "Notifications",
+                description: "You have disabled notifications. Keep an eye out on the queue for messages that may require you to respond for you to keep your spot in line!",
+                status: "warning",
+                position: "top",
+                duration: 5000,
+                isClosable: true
+            });
+        }
     }
 
     useEffect(() => {
