@@ -4,7 +4,7 @@ import {
     IoArrowUndoCircle,
     IoChatbubbleEllipses,
     IoCheckmarkCircle,
-    IoEnter,
+    IoEnter, IoFlashOff,
     IoHandRight,
     IoHelpCircle,
     IoHourglass,
@@ -76,6 +76,10 @@ function QueueWaiter({waiter, onLeaveQueue, onHelpStudent, onPinStudent, ...prop
             returnElements.push(<Icon as={IoPulse} boxSize={6} color={attributes.is_online ? "green" : "red"} />)
         }
 
+        if (attributes.helped_today) {
+            returnElements.push(<Icon as={IoFlashOff} boxSize={6} />)
+        }
+
         return returnElements
     }, []);
 
@@ -119,7 +123,7 @@ function QueueWaiter({waiter, onLeaveQueue, onHelpStudent, onPinStudent, ...prop
                         {waiter.uniqname && <Text>({waiter.uniqname})</Text>}
                     </HStack>
                     <HStack flexDir={'row-reverse'}>
-                        {processTopAttributes(waiter.top_attributes).map((icon, i) => {
+                        {processTopAttributes(waiter.attributes).map((icon, i) => {
                             return (
                             <Fade in key={i}>
                                 {icon}
@@ -133,7 +137,7 @@ function QueueWaiter({waiter, onLeaveQueue, onHelpStudent, onPinStudent, ...prop
                 {isStaff && <QueueWaiterStaffActions
                     onHelp={(help) => helpStudent(selectedQueueId, waiter.uid, help)}
                     onDone={() => doneHelpingStudent(selectedQueueId, waiter.uid)}
-                    onPin={() => markStudentAsWaiting(selectedQueueId, waiter.uid, !waiter.top_attributes.in_waiting_room)}
+                    onPin={() => markStudentAsWaiting(selectedQueueId, waiter.uid, !waiter.attributes.in_waiting_room)}
                     onMessage={() => {setShowMessageModal(true)}}
                     waiter={waiter}
                     mt={4}/>}
@@ -160,12 +164,12 @@ function QueueWaiterStaffActions({onHelp, onDone, onPin, onMessage, waiter, ...p
             <AnimatePresence initial={false}>
             <QueueWaiterActionButton
                 key={'help'}
-                leftIcon={<Icon as={waiter.top_attributes.being_helped ? IoCheckmarkCircle : IoHandRight} boxSize={4}/> }
+                leftIcon={<Icon as={waiter.attributes.being_helped ? IoCheckmarkCircle : IoHandRight} boxSize={4}/> }
                 colorScheme={'green'}
-                onClick={waiter.top_attributes.being_helped ? onDone : () => onHelp(true)}>
-                {waiter.top_attributes.being_helped ? "Done" : "Help"}
+                onClick={waiter.attributes.being_helped ? onDone : () => onHelp(true)}>
+                {waiter.attributes.being_helped ? "Done" : "Help"}
             </QueueWaiterActionButton>
-            {waiter.top_attributes.being_helped &&
+            {waiter.attributes.being_helped &&
                 <QueueWaiterActionButton
                 key={'undo'}
                 leftIcon={<Icon as={IoArrowUndoCircle} boxSize={4}/>}
@@ -180,7 +184,7 @@ function QueueWaiterStaffActions({onHelp, onDone, onPin, onMessage, waiter, ...p
                 leftIcon={<Icon as={IoPauseCircle} boxSize={4}/>}
                 colorScheme={'blue'}
                 onClick={onPin}>
-                {waiter.top_attributes.in_waiting_room ? "Bring Back to Queue" : "Mark as Waiting"}
+                {waiter.attributes.in_waiting_room ? "Bring Back to Queue" : "Mark as Waiting"}
             </QueueWaiterActionButton>
             <QueueWaiterActionButton
                 key={'message_student'}
@@ -216,7 +220,7 @@ function QueueWaiterSelfActionButtons({waiter, onLeave, onMessage, onStopWaiting
                 leftIcon={<Icon as={IoRemoveCircle} boxSize={4}/> }
                 colorScheme={'red'}
                 onClick={onLeave}>Leave Queue</QueueWaiterActionButton>
-            {waiter.top_attributes.in_waiting_room &&
+            {waiter.attributes.in_waiting_room &&
             <QueueWaiterActionButton
                 key={'stop-waiting'}
                 leftIcon={<Icon as={IoPauseCircle} boxSize={4}/>}
