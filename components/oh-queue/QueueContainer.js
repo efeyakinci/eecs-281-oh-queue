@@ -57,10 +57,19 @@ const QueueContainer = (props) => {
     const toast = useToast();
     const router = useRouter();
 
+    const checkNotificationPermission = () => {
+        if (Notification.permission === 'default') {
+            Notification.requestPermission();
+        }
+
+    }
+
     useEffect(() => {
         api.get_queues().then((response) => {
             setAvailableQueues(response.data);
         });
+
+        checkNotificationPermission();
 
         const beingHelpedCleanup = setOnBeingHelped((data) => {
             console.log("Being helped")
@@ -79,11 +88,17 @@ const QueueContainer = (props) => {
         });
 
         const onHeartbeatReceivedCleanup = setOnHeartbeat((data) => {
-            console.log("Heartbeat received")
             setHeartbeat({
                 showModal: true,
                 heartbeatRequest: data
             });
+
+            if (Notification.permission === 'granted') {
+                new Notification('Heartbeat Request', {
+                    body: 'Go back to the queue and acknowledge the request to keep your spot in line!',
+                    icon: '/heart-icon.webp'
+                });
+            }
         });
 
         const errorHandlerCleanup = setErrorMessageHandler(({error}) => {
