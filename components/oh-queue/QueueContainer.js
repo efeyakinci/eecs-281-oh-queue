@@ -104,11 +104,18 @@ const QueueContainer = (props) => {
         });
 
         const onMessageReceivedCleanup = setOnMessageReceived((data) => {
-            console.log("Message received")
             setReceivedMessage({
                 message: data.message,
                 isMessageReceived: true
-            })
+            });
+
+            if (Notification.permission === 'granted') {
+                console.log("Sending notification");
+                new Notification('Message Received', {
+                    body: 'Message from staff: ' + data.message,
+                    icon: '/favicon.ico'
+                });
+            }
         });
 
         const onHeartbeatReceivedCleanup = setOnHeartbeat((data) => {
