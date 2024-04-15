@@ -60,6 +60,14 @@ const QueueContainer = (props) => {
     const checkNotificationPermission = () => {
         if (Notification.permission === 'default') {
             Notification.requestPermission();
+            toast({
+                title: "Notifications",
+                description: "Make sure to allow notifications to receive updates from the queue!",
+                status: "info",
+                position: "top",
+                duration: 5000,
+                isClosable: true
+            });
         }
 
     }
@@ -94,9 +102,10 @@ const QueueContainer = (props) => {
             });
 
             if (Notification.permission === 'granted') {
+                console.log("Sending notification");
                 new Notification('Heartbeat Request', {
                     body: 'Go back to the queue and acknowledge the request to keep your spot in line!',
-                    icon: '/heart-icon.webp'
+                    icon: '/favicon.ico'
                 });
             }
         });
