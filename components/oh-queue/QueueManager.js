@@ -1,17 +1,19 @@
 import React, {useState} from 'react';
 import {Button, Heading, Icon, SimpleGrid, VStack} from "@chakra-ui/react";
-import {IoFitness, IoMegaphone, IoTime, IoTrash} from "react-icons/io5";
+import {IoCalendar, IoFitness, IoMegaphone, IoSync, IoSyncCircle, IoTime, IoTrash} from "react-icons/io5";
 import BroadcastMessageModal from "@/components/oh-queue/modals/BroadcastMessageModal";
 import RequestHeartbeatModal from "@/components/oh-queue/modals/RequestHeartbeatModal";
 import useQueueStore from "@/stores/QueueStore";
 import ClearQueueModal from "@/components/oh-queue/modals/ClearQueueModal";
 import ManualQueueOpenCloseModal from "@/components/oh-queue/modals/ManualQueueOpenCloseModal";
+import SyncCalendarModal from "@/components/oh-queue/modals/SyncCalendarModal";
 
 const QueueManager = ({queueLength, ...props}) => {
     const [showBroadcastModal, setShowBroadcastModal] = useState(false);
     const [showRequestHeartbeatModal, setShowRequestHeartbeatModal] = useState(false);
     const [showClearQueueModal, setShowClearQueueModal] = useState(false);
     const [showManualQueueOpenCloseModal, setShowManualQueueOpenCloseModal] = useState(false);
+    const [showSyncCalendarModal, setShowSyncCalendarModal] = useState(false);
 
     const selectedQueueId = useQueueStore(state => state.selectedQueueId);
 
@@ -43,6 +45,12 @@ const QueueManager = ({queueLength, ...props}) => {
                     onClick={() => {setShowManualQueueOpenCloseModal(true)}}>
                     Manually Open/Close Queue
                 </Button>
+                <Button
+                    leftIcon={<Icon as={IoSyncCircle} boxSize={4}/>}
+                    colorScheme={'pink'}
+                    onClick={() => {setShowSyncCalendarModal(true)}}>
+                    Sync Calendar
+                </Button>
             </SimpleGrid>
 
             <BroadcastMessageModal
@@ -60,6 +68,10 @@ const QueueManager = ({queueLength, ...props}) => {
             <ManualQueueOpenCloseModal
                 isOpen={showManualQueueOpenCloseModal}
                 onClose={() => setShowManualQueueOpenCloseModal(false)}
+                queueId={selectedQueueId}/>
+            <SyncCalendarModal
+                isOpen={showSyncCalendarModal}
+                onClose={() => setShowSyncCalendarModal(false)}
                 queueId={selectedQueueId}/>
         </VStack>
     );

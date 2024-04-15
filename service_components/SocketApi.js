@@ -27,6 +27,7 @@ const QueueEvents = {
     ERROR: 'queue:error',
     CLEAR_QUEUE: 'queue:clear_queue',
     OVERRIDE_QUEUE_SCHEDULE: 'queue:override_queue_schedule',
+    SYNC_CALENDAR: 'queue:sync_calendar'
 }
 
 const AuthEvents = {
@@ -196,4 +197,8 @@ export const overrideQueueSchedule = (queueId, override_type, from_date_time, to
         from_date_time,
         to_date_time
     }});
+}
+
+export const syncCalendar = (queueId) => {
+    socket.emit(QueueEvents.SYNC_CALENDAR, {queue_id: queueId});
 }
