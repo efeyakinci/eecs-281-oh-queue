@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useState} from 'react';
-import {Button, Fade, Flex, HStack, Icon, Link, Text, VStack} from "@chakra-ui/react";
+import {Box, Button, Fade, Flex, HStack, Icon, Link, Text, Tooltip, VStack} from "@chakra-ui/react";
 import {
     IoArrowUndoCircle,
     IoChatbubbleEllipses,
@@ -33,7 +33,7 @@ const attributeToIcon = {
     'is_online': IoPulse
 }
 
-function QueueWaiter({waiter, onLeaveQueue, onHelpStudent, onPinStudent, ...props}) {
+function QueueWaiter({waiter, ...props}) {
 
     const isStaff = useUserStore(state => state.isStaff);
     const isLoggedIn = useUserStore(state => state.isLoggedIn);
@@ -65,19 +65,35 @@ function QueueWaiter({waiter, onLeaveQueue, onHelpStudent, onPinStudent, ...prop
         const returnElements = []
 
         if (attributes.in_waiting_room) {
-            returnElements.push(<Icon as={IoPauseCircle} boxSize={6} />)
+            returnElements.push(
+                <Tooltip label={'In waiting room'} key={'in_waiting_room'} placement={'top'}>
+                    <Box>
+                        <Icon as={IoPauseCircle} boxSize={6} />
+                    </Box>
+                </Tooltip>
+            )
         }
 
         if (attributes.being_helped) {
-            returnElements.push(<Icon as={IoHandRight} boxSize={6} />)
+            returnElements.push(
+                <Icon as={IoHandRight} boxSize={6} />
+            )
         }
 
         if (attributes.is_online !== undefined) {
-            returnElements.push(<Icon as={IoPulse} boxSize={6} color={attributes.is_online ? "green" : "red"} />)
+            returnElements.push(
+                <Icon as={IoPulse} boxSize={6} color={attributes.is_online ? "green" : "red"} />
+            )
         }
 
         if (attributes.helped_today) {
-            returnElements.push(<Icon as={IoFlashOff} boxSize={6} />)
+            returnElements.push(
+                <Tooltip label={'Helped today'} key={'helped_today'} placement={'top'}>
+                    <Box>
+                        <Icon as={IoFlashOff} boxSize={6} />
+                    </Box>
+                </Tooltip>
+            )
         }
 
         return returnElements
@@ -124,11 +140,14 @@ function QueueWaiter({waiter, onLeaveQueue, onHelpStudent, onPinStudent, ...prop
                     </HStack>
                     <HStack flexDir={'row-reverse'}>
                         {processTopAttributes(waiter.attributes).map((icon, i) => {
-                            return (
-                            <Fade in key={i}>
-                                {icon}
-                            </Fade>
-                            );
+                            if (icon) {
+                                return (
+                                    <Fade in key={i}>
+                                        {icon}
+                                    </Fade>
+                                );
+                            }
+                            return null;
                         })}
                     </HStack>
                 </Flex>

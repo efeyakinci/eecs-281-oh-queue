@@ -1,19 +1,21 @@
 import React, {useState} from 'react';
 import {Button, Heading, Icon, SimpleGrid, VStack} from "@chakra-ui/react";
-import {IoCalendar, IoFitness, IoMegaphone, IoSync, IoSyncCircle, IoTime, IoTrash} from "react-icons/io5";
+import {IoAddCircle, IoCalendar, IoFitness, IoMegaphone, IoSync, IoSyncCircle, IoTime, IoTrash} from "react-icons/io5";
 import BroadcastMessageModal from "@/components/oh-queue/modals/BroadcastMessageModal";
 import RequestHeartbeatModal from "@/components/oh-queue/modals/RequestHeartbeatModal";
 import useQueueStore from "@/stores/QueueStore";
 import ClearQueueModal from "@/components/oh-queue/modals/ClearQueueModal";
 import ManualQueueOpenCloseModal from "@/components/oh-queue/modals/ManualQueueOpenCloseModal";
 import SyncCalendarModal from "@/components/oh-queue/modals/SyncCalendarModal";
+import AddAnnoucementModal from "@/components/oh-queue/modals/AddAnnoucementModal";
 
-const QueueManager = ({queueLength, ...props}) => {
+const QueueManager = (props: any) => {
     const [showBroadcastModal, setShowBroadcastModal] = useState(false);
     const [showRequestHeartbeatModal, setShowRequestHeartbeatModal] = useState(false);
     const [showClearQueueModal, setShowClearQueueModal] = useState(false);
     const [showManualQueueOpenCloseModal, setShowManualQueueOpenCloseModal] = useState(false);
     const [showSyncCalendarModal, setShowSyncCalendarModal] = useState(false);
+    const [showAddAnnouncementModal, setShowAddAnnouncementModal] = useState(false);
 
     const selectedQueueId = useQueueStore(state => state.selectedQueueId);
 
@@ -26,6 +28,12 @@ const QueueManager = ({queueLength, ...props}) => {
                     colorScheme={'red'}
                     onClick={() => setShowClearQueueModal(true)}>
                     Clear Queue
+                </Button>
+                <Button
+                    leftIcon={<Icon as={IoAddCircle} boxSize={4}/>}
+                    colorScheme={'green'}
+                    onClick={() => {setShowAddAnnouncementModal(true)}}>
+                    Add Announcement
                 </Button>
                 <Button
                     leftIcon={<Icon as={IoMegaphone} boxSize={4}/>}
@@ -72,6 +80,10 @@ const QueueManager = ({queueLength, ...props}) => {
             <SyncCalendarModal
                 isOpen={showSyncCalendarModal}
                 onClose={() => setShowSyncCalendarModal(false)}
+                queueId={selectedQueueId}/>
+            <AddAnnoucementModal
+                isOpen={showAddAnnouncementModal}
+                onClose={() => setShowAddAnnouncementModal(false)}
                 queueId={selectedQueueId}/>
         </VStack>
     );

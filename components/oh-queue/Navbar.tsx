@@ -7,7 +7,7 @@ import {api_client} from "@/service_components/api";
 import {loginWithGoogle, logout, setOnReconnect, subscribeToQueue, tokenLogin} from "@/service_components/SocketApi";
 import useQueueStore from "@/stores/QueueStore";
 
-const Navbar = (props) => {
+const Navbar = (props: any) => {
     const uniqname = useUserStore(state => state.uniqname);
     const selectedQueueId = useQueueStore(state => state.selectedQueueId);
 
@@ -59,11 +59,11 @@ const Navbar = (props) => {
     );
 };
 
-const LoggedOutNavbarContents = (props) => {
+const LoggedOutNavbarContents = (props: any) => {
     const setLoginData = useUserStore(state => state.onLogin);
     const setLoggedOut = useUserStore(state => state.onLogout);
 
-    const storeUserData = useCallback(({token, uniqname, is_staff: isStaff, error}) => {
+    const storeUserData = useCallback(({token, uniqname, is_staff: isStaff, error}: {token: string, uniqname: string, is_staff: boolean, error: any}) => {
         if (error) {
             setLoggedOut();
             return;
@@ -74,11 +74,11 @@ const LoggedOutNavbarContents = (props) => {
         localStorage.setItem('credentials', JSON.stringify({token, uniqname, isStaff}));
     }, [setLoginData, setLoggedOut]);
 
-    const onTokenLogin = useCallback((token) => {
+    const onTokenLogin = useCallback((token: string) => {
         tokenLogin(token, storeUserData);
     }, [storeUserData]);
 
-    const onGoogleLogin = async (data) => {
+    const onGoogleLogin = async (data: any) => {
         const google_access_token = data.access_token;
 
         loginWithGoogle(google_access_token, ({token}) => {
@@ -90,7 +90,7 @@ const LoggedOutNavbarContents = (props) => {
         });
     }
 
-    const onError = (error) => {
+    const onError = (error: any) => {
         console.error(error);
     };
 
@@ -101,7 +101,7 @@ const LoggedOutNavbarContents = (props) => {
 
     useEffect(() => {
         if (localStorage.getItem('credentials')) {
-            const {token} = JSON.parse(localStorage.getItem('credentials'));
+            const {token} = JSON.parse(localStorage.getItem('credentials') ?? "{}");
             if (token) {
                 onTokenLogin(token);
             }
@@ -116,7 +116,12 @@ const LoggedOutNavbarContents = (props) => {
     );
 }
 
-const LoggedInNavbarContents = ({uniqname}) => {
+type LoggedInNavbarContentsProps = {
+    uniqname: string;
+
+}
+
+const LoggedInNavbarContents: React.FC<LoggedInNavbarContentsProps> = ({uniqname}) => {
     const clearLoginData = useUserStore(state => state.onLogout);
 
     const onLogout = () => {

@@ -23,7 +23,7 @@ import useDelayedPeriodicUpdate from "@/hooks/useDelayedPeriodicUpdate";
 import useQueueStore from "@/stores/QueueStore";
 import {useUserStore} from "@/stores/UserStore";
 
-const QueueSignup = (props) => {
+const QueueSignup = (props: any) => {
     const queueStatus = useQueueStore(state => state.status);
     const selectedQueueId = useQueueStore(state => state.selectedQueueId);
     const isQueueOpen = useQueueStore(state => state.isQueueOpen);
@@ -66,11 +66,15 @@ const QueueSignup = (props) => {
         setEventState({currentEvent: events[currentEvent], nextEvent});
     }, [isQueueOpen, queueStatusRef]);
 
-    const onJoinQueue = (values) => {
+    const onJoinQueue = (values: any) => {
+        if (!selectedQueueId) return;
+
         joinQueue(selectedQueueId, values);
     }
 
-    const onUpdateSelf = (values) => {
+    const onUpdateSelf = (values: any) => {
+        if (!selectedQueueId || !queueStatus.signedUpUid) return;
+
         updateSelf(selectedQueueId, queueStatus.signedUpUid, {help_description: values.help_description, location: values.location});
     }
 
@@ -104,7 +108,16 @@ const QueueSignup = (props) => {
     );
 };
 
-const QueueSignupForm = ({values, handleChange, handleBlur, handleSubmit, queueIsOpen, userInQueue}) => {
+type QueueSignupFormProps = {
+    values: any;
+    handleChange: any;
+    handleBlur: any;
+    handleSubmit: any;
+    queueIsOpen: boolean;
+    userInQueue: boolean;
+}
+
+const QueueSignupForm: React.FC<QueueSignupFormProps> = ({values, handleChange, handleBlur, handleSubmit, queueIsOpen, userInQueue}) => {
     const userLoggedIn = useUserStore(state => state.isLoggedIn);
 
     return (
@@ -135,7 +148,7 @@ const QueueSignupForm = ({values, handleChange, handleBlur, handleSubmit, queueI
             <FormControl>
                 <FormLabel>How Long Do You Think It&apos;ll Take?</FormLabel>
                 <NumberInput min={0} isDisabled={userInQueue}>
-                    <NumberInputField placeholder={5} name={"time_requested"} onChange={handleChange} onBlur={handleBlur}/>
+                    <NumberInputField placeholder={'5'} name={"time_requested"} onChange={handleChange} onBlur={handleBlur}/>
                 </NumberInput>
                 <FormHelperText>(in minutes)</FormHelperText>
                 <FormHelperText>This is so that other students have an idea of how long they might need to wait for.</FormHelperText>

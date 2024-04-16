@@ -14,29 +14,31 @@ import useQueueStore from "@/stores/QueueStore";
 import {AnimatePresence, LayoutGroup} from "framer-motion";
 import {MotionBox} from "@/components/motion-components/motion-components";
 import Head from "next/head";
+import {useErrorToast} from "@/hooks/useErrorToast";
+import {QueueWaiter} from "@/types/QueueTypes";
 
 const QueueList = ({...props}) => {
-    const [queueWaiters, setQueueWaiters] = useState([]);
+    const [queueWaiters, setQueueWaiters] = useState<QueueWaiter[]>([]);
 
     const selectedQueueId = useQueueStore(state => state.selectedQueueId);
     const selectedQueueName = useQueueStore(state => state.selectedQueueName);
 
     const setQueueStatus = useQueueStore(state => state.setStatus);
     const loggedInUser = useUserStore(state => state.uniqname);
-    const toast = useToast();
+    const errorToast = useErrorToast();
 
-    const [waiterInfos, setWaiterInfos] = useState({});
-    const [waiterIndices, setWaiterIndices] = useState({});
+    const [waiterInfos, setWaiterInfos] = useState<{[k: string]: QueueWaiter}>({});
+    const [waiterIndices, setWaiterIndices] = useState<{[k: string]: number}>({});
 
-    const queueInfoUpdateHandler = useCallback((data) => {
+    const queueInfoUpdateHandler = useCallback((data: any) => {
         if (data.error) {
-            toast(errorToast(data.error));
+            errorToast(data.error);
         }
 
         setWaiterInfos((prevInfos) => {
             return {...prevInfos, ...data.item_infos};
         });
-    }, [toast]);
+    }, [errorToast]);
 
     useEffect(() => {
         if (!selectedQueueId) return;
@@ -44,7 +46,7 @@ const QueueList = ({...props}) => {
         setWaiterInfos({});
         setWaiterIndices({});
         requestQueueUpdate(selectedQueueId);
-    }, [selectedQueueId, loggedInUser, toast]);
+    }, [selectedQueueId, loggedInUser, errorToast]);
 
     useEffect(() => {
         const newWaiters = Object.keys(waiterIndices)
@@ -66,7 +68,7 @@ const QueueList = ({...props}) => {
 
     useEffect(() => {
         const unknownItems = Object.keys(waiterIndices).filter((uid) => !waiterInfos[uid]);
-        if (unknownItems.length > 0) {
+        if (unknownItems.length > 0 && selectedQueueId) {
             requestItemInfo(selectedQueueId, unknownItems, queueInfoUpdateHandler);
         }
     }, [selectedQueueId, waiterIndices, waiterInfos, queueInfoUpdateHandler]);
@@ -88,9 +90,9 @@ const QueueList = ({...props}) => {
     useEffect(() => {
         if (!selectedQueueId) return;
 
-        const queueUpdateHandler = (data) => {
+        const queueUpdateHandler = (data: any) => {
             if (data.error) {
-                toast(errorToast(data.error));
+                errorToast(data.error);
             }
 
             setWaiterIndices(data.updated_queue);
@@ -120,7 +122,7 @@ const QueueList = ({...props}) => {
             updateHandlerCleanup();
             dataUpdateHandlerCleanup();
         }
-    }, [selectedQueueId,setQueueStatus, queueInfoUpdateHandler, toast])
+    }, [selectedQueueId,setQueueStatus, queueInfoUpdateHandler, errorToast])
 
     return (
         <VStack {...props} align={'flex-start'} h={'100%'}>

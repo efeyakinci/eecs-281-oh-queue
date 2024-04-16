@@ -1,4 +1,4 @@
-import React, {useEffect, useMemo, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {Box, Divider, Flex, useToast, VStack} from "@chakra-ui/react";
 import QueueList from "@/components/oh-queue/QueueList";
 import QueueAnnouncements from "@/components/oh-queue/QueueAnnouncements";
@@ -23,9 +23,11 @@ import QueueStatusContext from "@/components/contexts/QueueStatusContext";
 import useQueueStore from "@/stores/QueueStore";
 import {errorToast} from "@/components/oh-queue/Toasts";
 import {useRouter} from "next/router";
+import {useErrorToast} from "@/hooks/useErrorToast";
+import {string} from "prop-types";
 
 
-const QueueContainer = (props) => {
+const QueueContainer = (props: any) => {
     const [beingHelped, setBeingHelped] = useState({
         showModal: false,
         beingHelped: false
@@ -43,7 +45,7 @@ const QueueContainer = (props) => {
         heartbeatRequest: {}
     });
 
-    const [availableQueues, setAvailableQueues] = useState({});
+    const [availableQueues, setAvailableQueues] = useState<{[k :string]: string}>({});
     const [isQueueSelectorOpen, setIsQueueSelectorOpen] = useState(true);
     const queueSelectorVariants = {
         closed: {
@@ -54,6 +56,7 @@ const QueueContainer = (props) => {
         }
     }
 
+    const errorToast = useErrorToast();
     const toast = useToast();
     const router = useRouter();
 
@@ -61,7 +64,7 @@ const QueueContainer = (props) => {
         return typeof Notification !== 'undefined';
     }, []);
 
-    const checkNotificationPermission = () => {
+    const checkNotificationPermission = useCallback(() => {
         if (!canShowNotifications) return;
 
         if (Notification.permission === 'default') {
@@ -76,7 +79,7 @@ const QueueContainer = (props) => {
             });
         }
 
-        const warningShown = parseInt(localStorage.getItem('notificationWarningShown')) || 0;
+        const warningShown = parseInt(localStorage.getItem('notificationWarningShown') ?? '0');
 
 
         if (canShowNotifications && Notification.permission === 'denied' && warningShown < 3) {
@@ -89,10 +92,10 @@ const QueueContainer = (props) => {
                 isClosable: true
             });
 
-            const warningShown = localStorage.getItem('notificationWarningShown') || 0;
-            localStorage.setItem('notificationWarningShown', warningShown + 1);
+            const warningShown = parseInt(localStorage.getItem('notificationWarningShown') ?? '0');
+            localStorage.setItem('notificationWarningShown', (warningShown + 1).toString());
         }
-    }
+    }, [canShowNotifications, toast]);
 
     useEffect(() => {
         api.get_queues().then((response) => {
@@ -140,7 +143,7 @@ const QueueContainer = (props) => {
         });
 
         const errorHandlerCleanup = setErrorMessageHandler(({error}) => {
-            toast(errorToast(error))
+            errorToast(error);
         });
 
         return () => {
@@ -149,14 +152,14 @@ const QueueContainer = (props) => {
             onHeartbeatReceivedCleanup();
             errorHandlerCleanup();
         }
-    }, [toast]);
+    }, [errorToast, canShowNotifications, checkNotificationPermission]);
 
     const isStaff = useUserStore(state => state.isStaff);
 
     const selectedQueueId = useQueueStore(state => state.selectedQueueId);
     const setSelectedQueue = useQueueStore(state => state.setSelectedQueue);
 
-    const onSelectQueueId = (queueId) => {
+    const onSelectQueueId = (queueId: string) => {
         setSelectedQueue(prevQueueSelection => {
             if (prevQueueSelection.selectedQueueId) {
                 unsubscribeFromQueue(prevQueueSelection.selectedQueueId);
@@ -172,7 +175,6 @@ const QueueContainer = (props) => {
         <Flex justify={"center"} align={"center"} {...props}>
             <VStack w={['100%']} h={'100%'} align={'flex-start'}>
                 <Flex w={'100%'} h={'100%'} flexDir={['column', 'row']}>
-                    <QueueStatusContext.Provider value={{queueStatus, setQueueStatus}}>
                     <QueueSelector
                         variants={queueSelectorVariants}
                         initial={"open"}
@@ -185,7 +187,7 @@ const QueueContainer = (props) => {
                     />
                     <MotionVStack flex={5} layout mx={8}>
                     <QueueAnnouncements w={'100%'}/>
-                    <Flex w={'100%'} mt={8} spacing={16} columns={2} flexDirection={['column-reverse', 'row']}>
+                    <Flex w={'100%'} mt={8} flexDirection={['column-reverse', 'row']}>
                         <QueueList flex={[10, 9, 8]} pt={4}/>
                         <Box w={16} />
                         <VStack flex={'4'} spacing={8}>
@@ -196,7 +198,6 @@ const QueueContainer = (props) => {
                     </Flex>
                     </MotionVStack>
                     <MotionVStack flex={'1'} layout />
-                    </QueueStatusContext.Provider>
                 </Flex>
             </VStack>
 

@@ -2,8 +2,18 @@ import React from 'react';
 import moment from "moment/moment";
 import {HStack, Icon, Text, useColorModeValue, VStack} from "@chakra-ui/react";
 import {IoTime, IoWarning} from "react-icons/io5";
+import {QueueEvent, QueueOverride} from "@/types/QueueTypes";
 
-const OfficeHoursStatusDescriptor = ({currentEvents, override, ...props}) => {
+type OfficeHoursStatusDescriptorProps = {
+    currentEvents: {
+        currentEvent?: QueueEvent;
+        nextEvent?: QueueEvent;
+    }
+    override?: QueueOverride;
+    [key: string]: any;
+}
+
+const OfficeHoursStatusDescriptor: React.FC<OfficeHoursStatusDescriptorProps> = ({currentEvents, override, ...props}) => {
     const colorModeGreen = useColorModeValue('green.500', 'green.300');
     const colorModeRed = useColorModeValue('red.500', 'red.300');
 

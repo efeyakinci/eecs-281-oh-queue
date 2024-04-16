@@ -1,11 +1,16 @@
 import React, {useEffect} from 'react';
 import {MotionBox} from "@/components/motion-components/motion-components";
-import QueueWaiter from "@/components/oh-queue/QueueWaiter";
+import QueueWaiterItem from "@/components/oh-queue/QueueWaiter";
 import {AnimatePresence} from "framer-motion";
 import useQueueStore from "@/stores/QueueStore";
-import {useUserStore} from "@/stores/UserStore";
+import {useUserStore} from "@/stores/UserStore"
+import {QueueWaiter} from "@/types/QueueTypes";
 
-const QueueListDisplay = ({waiters}) => {
+type QueueListDisplayProps = {
+    waiters: QueueWaiter[]
+}
+
+const QueueListDisplay: React.FC<QueueListDisplayProps> = ({waiters}) => {
 
     const setQueueStatus = useQueueStore(state => state.setStatus);
     const loggedInUser = useUserStore(state => state.uniqname);
@@ -31,7 +36,7 @@ const QueueListDisplay = ({waiters}) => {
                     exit={{opacity: 0, y:-20}}
                     transition={{duration: 0.25}}
                 >
-                    <QueueWaiter
+                    <QueueWaiterItem
                         w={'100%'}
                         waiter={person}
                     />
