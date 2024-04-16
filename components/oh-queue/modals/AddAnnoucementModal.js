@@ -34,7 +34,7 @@ const AddAnnoucementModal = ({queueId, isOpen, onClose, ...props}) => {
             message: formState.message,
         }
         if (formState.useEffectiveUntil) {
-            announcement.until = formState.effectiveUntil;
+            announcement.until = moment(formState.effectiveUntil).unix();
         }
 
         addAnnouncement(queueId, announcement);
