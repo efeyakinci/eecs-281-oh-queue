@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useState} from 'react';
-import {Box, Button, Fade, Flex, HStack, Icon, Link, Text, Tooltip, VStack} from "@chakra-ui/react";
+import {Box, Button, Fade, Flex, HStack, Icon, Image, Link, Text, Tooltip, VStack} from "@chakra-ui/react";
 import {
     IoArrowUndoCircle,
     IoChatbubbleEllipses,
@@ -67,8 +67,8 @@ function QueueWaiter({waiter, ...props}) {
         if (attributes.in_waiting_room) {
             returnElements.push(
                 <Tooltip label={'In waiting room'} key={'in_waiting_room'} placement={'top'}>
-                    <Box>
-                        <Icon as={IoPauseCircle} boxSize={6} />
+                    <Box boxSize={8}>
+                        <Image src={'/eepy-cat.svg'} />
                     </Box>
                 </Tooltip>
             )
@@ -89,7 +89,7 @@ function QueueWaiter({waiter, ...props}) {
         if (attributes.helped_today) {
             returnElements.push(
                 <Tooltip label={'Helped today'} key={'helped_today'} placement={'top'}>
-                    <Box>
+                    <Box boxSize={6}>
                         <Icon as={IoFlashOff} boxSize={6} />
                     </Box>
                 </Tooltip>
