@@ -89,8 +89,8 @@ function QueueWaiter({waiter, ...props}) {
         if (attributes.helped_today) {
             returnElements.push(
                 <Tooltip label={'Helped today'} key={'helped_today'} placement={'top'}>
-                    <Box boxSize={6}>
-                        <Icon as={IoFlashOff} boxSize={6} />
+                    <Box boxSize={8}>
+                        <Image src={'/low-energy-cat.svg'} />
                     </Box>
                 </Tooltip>
             )
