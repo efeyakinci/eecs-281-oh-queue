@@ -11,7 +11,7 @@ import {
     ModalOverlay,
     Radio,
     RadioGroup,
-    Text,
+    Text, useColorModeValue,
     VStack
 } from "@chakra-ui/react";
 import React from "react";
@@ -100,14 +100,18 @@ const ManualQueueOpenCloseModal = ({queueId, isOpen, onClose, ...props}) => {
 };
 
 const SelectionButton = ({value, selectedValue, onClick, children, ...props}) => {
+    const selectedColor = useColorModeValue('orange.200', 'orange.400')
+    const notSelectedColor = useColorModeValue('white', 'blue.900')
+    const borderColor = useColorModeValue('gray.200', 'gray.600')
+
     return (
         <Flex justify={'center'}
               cursor={'pointer'}
               p={4}
               borderWidth={1}
-              borderColor={selectedValue === value ? 'orange.200' : 'gray.200'}
+              borderColor={selectedValue === value ? selectedColor : borderColor}
               borderRadius={8}
-              bg={selectedValue === value ? 'orange.200' : 'white'}
+              bg={selectedValue === value ? selectedColor : 'none'}
               transition={'all 0.1s ease-in-out'}
               onClick={onClick}
             {...props}>

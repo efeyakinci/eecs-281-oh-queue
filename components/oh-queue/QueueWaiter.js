@@ -67,9 +67,9 @@ function QueueWaiter({waiter, ...props}) {
         if (attributes.in_waiting_room) {
             returnElements.push(
                 <Tooltip label={'In waiting room'} key={'in_waiting_room'} placement={'top'}>
-                    <Box boxSize={8}>
+                    <Flex align={'center'} boxSize={8}>
                         <Image src={'/eepy-cat.svg'} />
-                    </Box>
+                    </Flex>
                 </Tooltip>
             )
         }
@@ -82,16 +82,18 @@ function QueueWaiter({waiter, ...props}) {
 
         if (attributes.is_online !== undefined) {
             returnElements.push(
-                <Icon as={IoPulse} boxSize={6} color={attributes.is_online ? "green" : "red"} />
+                <Box>
+                <Icon as={IoPulse} h={6} w={6} color={attributes.is_online ? "green" : "red"} />
+                </Box>
             )
         }
 
         if (attributes.helped_today) {
             returnElements.push(
                 <Tooltip label={'Helped today'} key={'helped_today'} placement={'top'}>
-                    <Box boxSize={8}>
+                    <Flex boxSize={8}>
                         <Image src={'/low-energy-cat.svg'} />
-                    </Box>
+                    </Flex>
                 </Tooltip>
             )
         }
@@ -138,7 +140,7 @@ function QueueWaiter({waiter, ...props}) {
                         <Text fontWeight={'bold'}>{waiter.name}</Text>
                         {waiter.uniqname && <Text>({waiter.uniqname})</Text>}
                     </HStack>
-                    <HStack flexDir={'row-reverse'}>
+                    <HStack flexDir={'row-reverse'} spacing={3}>
                         {processTopAttributes(waiter.attributes).map((icon, i) => {
                             if (icon) {
                                 return (
