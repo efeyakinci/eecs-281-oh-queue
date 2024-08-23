@@ -24,7 +24,6 @@ import {MotionBox} from "@/components/motion-components/motion-components";
 const ManualQueueOpenCloseModal = ({queueId, isOpen, onClose, ...props}) => {
 
     const onOverrideQueue = ({override_type, from_date_time, to_date_time}) => {
-        console.log(override_type, from_date_time, to_date_time);
         overrideQueueSchedule(queueId, override_type, moment(from_date_time).unix(), moment(to_date_time).unix());
         onClose();
     }

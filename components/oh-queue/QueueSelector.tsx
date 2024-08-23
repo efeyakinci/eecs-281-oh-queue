@@ -1,8 +1,9 @@
 import React, {useEffect} from 'react';
-import {Flex, Heading, Text, useColorMode, VStack} from "@chakra-ui/react";
+import {Collapse, Flex, Heading, HStack, Text, useColorMode, VStack} from "@chakra-ui/react";
 import {MotionBox, MotionFlex, MotionIconButton, MotionVStack} from "@/components/motion-components/motion-components";
 import {ArrowRightIcon} from "@chakra-ui/icons";
 import {useRouter} from "next/router";
+import { AvailableQueue } from '@/types/QueueTypes';
 
 const toggleButtonVariants = {
     "closed": {
@@ -22,7 +23,16 @@ const toggleContentVariants = {
     }
 };
 
-const QueueSelector = ({onToggle, isOpen, selectedQueueId, setSelectedQueueId, availableQueues, ...props}) => {
+type QueueSelectorProps = {
+    onToggle: () => void,
+    isOpen: boolean,
+    selectedQueueId: string | undefined,
+    setSelectedQueueId: (queueId: string) => void,
+    availableQueues: {[key: string]: AvailableQueue},
+    [key: string]: any
+}
+
+const QueueSelector: React.FC<QueueSelectorProps> = ({onToggle, isOpen, selectedQueueId, setSelectedQueueId, availableQueues, ...props}) => {
     const router = useRouter();
 
     useEffect(() => {
@@ -32,14 +42,28 @@ const QueueSelector = ({onToggle, isOpen, selectedQueueId, setSelectedQueueId, a
 
         if (selectedQueueId === undefined && Object.keys(availableQueues).length > 0) {
             const availableQueueIds = Object.keys(availableQueues);
-            if (router.query?.queueId && availableQueueIds.includes(router.query.queueId)) {
-                setSelectedQueueId(router.query.queueId);
+            if (router.query?.queueId && availableQueueIds.includes(router.query.queueId as string)) {
+                setSelectedQueueId(router.query.queueId as string);
             } else {
                 setSelectedQueueId(availableQueueIds[0])
             }
         }
     }, [selectedQueueId, availableQueues, setSelectedQueueId, router.isReady, router.query?.queueId]);
 
+    const getClassQueues = (queues: {[key: string]: AvailableQueue}): {[key: string]: {[key: string]: AvailableQueue}} => {
+        const classQueues: {[key: string]: {[key: string]: AvailableQueue}} = {};
+
+        Object.entries(queues).forEach(([queue_id, queue]) => {
+            if (!classQueues[queue.class_name]) {
+                classQueues[queue.class_name] = {};
+            }
+
+            classQueues[queue.class_name][queue_id] = queue;
+        });
+
+        return classQueues;
+    }
+    
     return (
         <MotionVStack align={'flex-start'} borderRightWidth={'1px'} {...props}>
             <Flex w={'100%'} justify={'flex-end'}>
@@ -70,14 +94,17 @@ const QueueSelector = ({onToggle, isOpen, selectedQueueId, setSelectedQueueId, a
 
                 <VStack w={'100%'} px={4} mt={4}>
                     <VStack w={'100%'} px={2} pb={2} spacing={2} borderLeftWidth={'1px'}>
-                    {Object.keys(availableQueues).map(((key) =>
-                        <SelectableQueue
-                            key={key}
-                            queueName={availableQueues[key]}
-                            selected={key === selectedQueueId}
-                            onClick={() => setSelectedQueueId(key)}
-                        />
-                    ))}
+                    {
+                        Object.entries(getClassQueues(availableQueues)).map(([class_name, queues]) =>
+                            <ClassQueues
+                                key={class_name}
+                                className={class_name}
+                                queues={queues}
+                                selectedQueueId={selectedQueueId}
+                                setSelectedQueueId={setSelectedQueueId}
+                            />
+                        )
+                    }
                     </VStack>
                 </VStack>
             </MotionVStack>
@@ -85,7 +112,54 @@ const QueueSelector = ({onToggle, isOpen, selectedQueueId, setSelectedQueueId, a
     );
 };
 
-const SelectableQueue = ({queueName, selected, ...props}) => {
+type ClassQueuesProps = {
+    className: string,
+    queues: {[key: string]: AvailableQueue},
+    selectedQueueId: string | undefined,
+    setSelectedQueueId: (queueId: string) => void
+}
+
+const ClassQueues = ({className, queues, selectedQueueId, setSelectedQueueId}: ClassQueuesProps) => {
+    const [isCollapsed, setIsCollapsed] = React.useState(true);
+
+    useEffect(() => {
+        if (Object.keys(queues).some(queue_id => queue_id === selectedQueueId)) {
+            setIsCollapsed(false);
+        }
+    }, [queues, selectedQueueId]);
+
+    return (
+        <VStack w={'100%'} px={4} pb={2} spacing={2} align={'start'}>
+            <HStack 
+                w={'100%'} 
+                justify={'space-between'} 
+                cursor={'pointer'}
+                mb={2}
+                onClick={() => setIsCollapsed(prevState => !prevState)}>
+                <Heading size={'sm'}>{className}</Heading>
+                <ArrowRightIcon boxSize={4} />
+            </HStack>
+            <Collapse in={!isCollapsed}>
+                {Object.entries(queues).map(([queue_id, queue]) =>
+                    <SelectableQueue
+                        key={queue_id}
+                        queueName={queue.queue_name}
+                        selected={queue_id === selectedQueueId}
+                        onClick={() => setSelectedQueueId(queue_id)}
+                    />
+                )}
+            </Collapse>
+        </VStack>
+    );
+}
+
+type SelectableQueueProps = {
+    queueName: string,
+    selected: boolean,
+    [key: string]: any
+}
+
+const SelectableQueue = ({queueName, selected, ...props}: SelectableQueueProps) => {
     const boxShadow = "rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px"
     const { colorMode } = useColorMode();
 

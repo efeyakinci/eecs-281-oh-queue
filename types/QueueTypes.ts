@@ -23,3 +23,8 @@ export type QueueWaiter = {
     onHelpStudent: any;
     onPinStudent: any;
 }
+
+export type AvailableQueue = {
+    queue_name: string,
+    class_name: string
+}

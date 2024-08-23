@@ -92,13 +92,16 @@ const QueueSignup = (props: any) => {
                 override={queueStatus.override}
                 currentEvents={eventState}/>
             <Heading>Sign Up</Heading>
-            <Formik initialValues={{help_description: '', location: '', time_requested: 0}} onSubmit={queueStatus.userInQueue ? onUpdateSelf : onJoinQueue}>
-                {({values, handleChange, handleBlur, handleSubmit}) => (
+            <Formik 
+            initialValues={{help_description: '', location: '', time_requested: 0}}
+            onSubmit={queueStatus.userInQueue ? onUpdateSelf : onJoinQueue}>
+                {({values, handleChange, handleBlur, handleSubmit, setFieldValue}) => (
                     <QueueSignupForm
                         values={values}
                         handleChange={handleChange}
                         handleBlur={handleBlur}
                         handleSubmit={handleSubmit}
+                        setFieldValue={setFieldValue}
                         queueIsOpen={queueIsOpen}
                         userInQueue={queueStatus.userInQueue}
                     />
@@ -115,9 +118,10 @@ type QueueSignupFormProps = {
     handleSubmit: any;
     queueIsOpen: boolean;
     userInQueue: boolean;
+    setFieldValue: any;
 }
 
-const QueueSignupForm: React.FC<QueueSignupFormProps> = ({values, handleChange, handleBlur, handleSubmit, queueIsOpen, userInQueue}) => {
+const QueueSignupForm: React.FC<QueueSignupFormProps> = ({values, handleChange, handleBlur, handleSubmit, queueIsOpen, userInQueue, setFieldValue}) => {
     const userLoggedIn = useUserStore(state => state.isLoggedIn);
 
     return (
@@ -147,8 +151,8 @@ const QueueSignupForm: React.FC<QueueSignupFormProps> = ({values, handleChange, 
 
             <FormControl>
                 <FormLabel>How Long Do You Think It&apos;ll Take?</FormLabel>
-                <NumberInput min={0} isDisabled={userInQueue}>
-                    <NumberInputField placeholder={'5'} name={"time_requested"} onChange={handleChange} onBlur={handleBlur}/>
+                <NumberInput min={0} isDisabled={userInQueue} onChange={(num) => setFieldValue("time_requested", parseInt(num))} onBlur={handleBlur}>
+                    <NumberInputField placeholder={'5'}/>
                 </NumberInput>
                 <FormHelperText>(in minutes)</FormHelperText>
                 <FormHelperText>This is so that other students have an idea of how long they might need to wait for.</FormHelperText>

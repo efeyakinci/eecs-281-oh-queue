@@ -35,7 +35,7 @@ const attributeToIcon = {
 
 function QueueWaiter({waiter, ...props}) {
 
-    const isStaff = useUserStore(state => state.isStaff);
+    const isStaff = useQueueStore(state => state.isUserStaff);
     const isLoggedIn = useUserStore(state => state.isLoggedIn);
     const loggedInUniqname = useUserStore(state => state.uniqname);
 

@@ -40,7 +40,7 @@ type QueueAnnouncementProps = {
 const QueueAnnouncement: React.FC<QueueAnnouncementProps> = ({announcement}) => {
     const { colorMode } = useColorMode();
     const queueId = useQueueStore(state => state.selectedQueueId);
-    const isStaff = useUserStore(state => state.isStaff);
+    const isStaff = useQueueStore(state => state.isUserStaff);
     const { isOpen, onOpen, onClose } = useDisclosure();
 
     const deleteAnnouncement = () => {

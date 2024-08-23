@@ -17,11 +17,10 @@ const QueueListDisplay: React.FC<QueueListDisplayProps> = ({waiters}) => {
 
     useEffect(() => {
         const queueUser = waiters.find(waiter => waiter.uniqname === loggedInUser);
-        if (queueUser !== undefined) {
-            setQueueStatus(status => ({...status, userInQueue: true, signedUpUid: queueUser.uid}));
-        } else {
-            setQueueStatus(status => ({...status, userInQueue: false, signedUpUid: undefined}));
-        }
+        const userInQueue = queueUser !== undefined;
+        const signedUpUid = userInQueue ? queueUser.uid : undefined;
+
+        setQueueStatus(status => ({...status, userInQueue, signedUpUid}));
     }, [waiters, loggedInUser, setQueueStatus]);
 
     return (

@@ -5,23 +5,26 @@ import {QueueState, UpdateQueueFn, UpdateStatusFn} from "./QueueStoreTypes";
 const useQueueStore = create<QueueState>((set, get) => ({
     selectedQueueId: undefined,
     selectedQueueName: undefined,
+    isUserStaff: false,
     status: {
         userInQueue: false,
         signedUpUid: undefined,
         events: [],
         announcements: [],
-        override: undefined
+        override: undefined,
     },
 
     setSelectedQueue: (fn: UpdateQueueFn) => set(state => {
         const updated = fn({ selectedQueueId: state.selectedQueueId, selectedQueueName: state.selectedQueueName });
-        return { selectedQueueId: updated.selectedQueueId, selectedQueueName: updated.selectedQueueName };
+        return { selectedQueueId: updated.selectedQueueId, selectedQueueName: updated.selectedQueueName};
     }),
 
     setStatus: (fn: UpdateStatusFn) => set(state => {
         const updated = fn(state.status);
         return { status: updated };
     }),
+
+    setIsUserStaff: (isStaff: boolean) => set({ isUserStaff: isStaff }),
 
     isQueueOpen: (atTime: Moment) => {
         const override = get().status.override;
