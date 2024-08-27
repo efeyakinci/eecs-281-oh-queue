@@ -9,7 +9,7 @@ import {MotionVStack} from "@/components/motion-components/motion-components";
 import QueueSelector from "@/components/oh-queue/QueueSelector";
 import api from "@/service_components/api";
 import {
-    checkIfStaff,
+    queryIfStaff,
     setErrorMessageHandler,
     setOnBeingHelped,
     setOnHeartbeat,
@@ -157,7 +157,6 @@ const QueueContainer = (props: any) => {
     }, [errorToast, canShowNotifications, checkNotificationPermission]);
 
     const isStaff = useQueueStore(state => state.isUserStaff);
-    const setIsUserStaff = useQueueStore(state => state.setIsUserStaff);
     const selectedQueueId = useQueueStore(state => state.selectedQueueId);
     const setSelectedQueue = useQueueStore(state => state.setSelectedQueue);
 
@@ -167,10 +166,6 @@ const QueueContainer = (props: any) => {
                 unsubscribeFromQueue(prevQueueSelection.selectedQueueId);
             }
             subscribeToQueue(queueId);
-            checkIfStaff(queueId, (isStaff) => {
-                setIsUserStaff(isStaff);
-            });
-
             return {selectedQueueId: queueId, selectedQueueName: availableQueues[queueId].queue_name};
         });
         router.replace(`/queues/${queueId}`, `/queues/${queueId}`, {shallow: true});

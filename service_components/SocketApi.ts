@@ -69,10 +69,6 @@ export const subscribeToQueue = (queueId: string) => {
     socket.emit('queue:subscribe', {queue_id: queueId});
 };
 
-export const checkIfStaffForQueue = (queueId: string, callback: EventHandler) => {
-    socket.emit(QueueEvents.CHECK_IF_STAFF, {queue_id: queueId}, callback);
-}
-
 export const unsubscribeFromQueue = (queueId: string) => {
     socket.emit('queue:unsubscribe', {queue_id: queueId});
 }
@@ -99,7 +95,7 @@ export const tokenLogin = (token: string, reauth_callback_handler: EventHandler)
     socket.emit(AuthEvents.TOKEN_LOGIN, {token}, reauth_callback_handler);
 }
 
-export const checkIfStaff = (queueId: string, callback: EventHandler) => {
+export const queryIfStaff = (queueId: string, callback: EventHandler) => {
     socket.emit(QueueEvents.CHECK_IF_STAFF, {queue_id: queueId}, callback);
 }
 

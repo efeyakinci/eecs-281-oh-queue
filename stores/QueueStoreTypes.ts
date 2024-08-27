@@ -28,7 +28,7 @@ export type QueueState = {
 
     setSelectedQueue: (fn: UpdateQueueFn) => void;
     setStatus: (fn: UpdateStatusFn) => void;
-    setIsUserStaff: (isStaff: boolean) => void;
+    checkIfStaff: () => void;
     isQueueOpen: (atTime: Moment) => boolean;
 }
 

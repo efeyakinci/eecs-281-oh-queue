@@ -1,6 +1,7 @@
 import moment, {Moment} from "moment";
 import {create} from "zustand";
 import {QueueState, UpdateQueueFn, UpdateStatusFn} from "./QueueStoreTypes";
+import {queryIfStaff} from "@/service_components/SocketApi";
 
 const useQueueStore = create<QueueState>((set, get) => ({
     selectedQueueId: undefined,
@@ -14,17 +15,30 @@ const useQueueStore = create<QueueState>((set, get) => ({
         override: undefined,
     },
 
-    setSelectedQueue: (fn: UpdateQueueFn) => set(state => {
-        const updated = fn({ selectedQueueId: state.selectedQueueId, selectedQueueName: state.selectedQueueName });
-        return { selectedQueueId: updated.selectedQueueId, selectedQueueName: updated.selectedQueueName};
-    }),
+    setSelectedQueue: (fn: UpdateQueueFn) => {
+        set(state => {
+            const updated = fn({ selectedQueueId: state.selectedQueueId, selectedQueueName: state.selectedQueueName });
+            return { selectedQueueId: updated.selectedQueueId, selectedQueueName: updated.selectedQueueName};
+        });
+        get().checkIfStaff();
+    },
 
     setStatus: (fn: UpdateStatusFn) => set(state => {
         const updated = fn(state.status);
         return { status: updated };
     }),
 
-    setIsUserStaff: (isStaff: boolean) => set({ isUserStaff: isStaff }),
+    checkIfStaff: () => {
+        const selectedQueueId = get().selectedQueueId;
+        if (!selectedQueueId) {
+            return;
+        }
+
+        queryIfStaff(selectedQueueId, (isStaff: boolean) => {
+            console.log("isStaff: ", isStaff);
+            set({ isUserStaff: isStaff });
+        });
+    },
 
     isQueueOpen: (atTime: Moment) => {
         const override = get().status.override;

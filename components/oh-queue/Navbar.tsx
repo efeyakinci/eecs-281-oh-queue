@@ -4,12 +4,20 @@ import {useUserStore} from "@/stores/UserStore";
 import {IoMoon, IoPerson} from "react-icons/io5";
 import {useGoogleLogin} from "@react-oauth/google";
 import {api_client} from "@/service_components/api";
-import {loginWithGoogle, logout, setOnReconnect, subscribeToQueue, tokenLogin} from "@/service_components/SocketApi";
+import {
+    queryIfStaff,
+    loginWithGoogle,
+    logout,
+    setOnReconnect,
+    subscribeToQueue,
+    tokenLogin
+} from "@/service_components/SocketApi";
 import useQueueStore from "@/stores/QueueStore";
 
 const Navbar = (props: any) => {
     const uniqname = useUserStore(state => state.uniqname);
     const selectedQueueId = useQueueStore(state => state.selectedQueueId);
+    const checkIfStaff = useQueueStore(state => state.checkIfStaff);
 
     const { colorMode, toggleColorMode} = useColorMode();
 
@@ -27,11 +35,27 @@ const Navbar = (props: any) => {
         }
     }, [selectedQueueId]);
 
+    const setLoginData = useUserStore(state => state.onLogin);
+    const clearLoginData = useUserStore(state => state.onLogout);
+
+    const onLogin = useCallback((token: string, uniqname: string) => {
+        api_client.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+        setLoginData(token, uniqname);
+        localStorage.setItem('credentials', JSON.stringify({token, uniqname}));
+        checkIfStaff();
+    }, [setLoginData]);
+
+    const onLogout = useCallback(async () => {
+        delete api_client.defaults.headers.common['Authorization'];
+        clearLoginData();
+        localStorage.removeItem('credentials');
+        await logout();
+        checkIfStaff();
+    }, [clearLoginData]);
+
     useEffect(() => {
         reconnectHandler();
     }, []);
-
-
 
     useEffect(() => {
         const cleanup = setOnReconnect(reconnectHandler);
@@ -53,26 +77,34 @@ const Navbar = (props: any) => {
                     variant={'ghost'}
                     cursor={'pointer'}
                     mr={4}/>
-                {uniqname ? <LoggedInNavbarContents uniqname={uniqname}/> : <LoggedOutNavbarContents />}
+                {uniqname ?
+                    <LoggedInNavbarContents
+                        uniqname={uniqname}
+                        onLogout={onLogout}
+                    /> :
+                    <LoggedOutNavbarContents
+                        onLogin={onLogin}
+                        onLogout={clearLoginData}
+                    />}
             </Flex>
         </Flex>
     );
 };
 
-const LoggedOutNavbarContents = (props: any) => {
-    const setLoginData = useUserStore(state => state.onLogin);
-    const setLoggedOut = useUserStore(state => state.onLogout);
+type LoggedOutNavbarContentsProps = {
+    onLogin: (token: string, uniqname: string) => void;
+    onLogout: () => void;
+}
 
+const LoggedOutNavbarContents: React.FC<LoggedOutNavbarContentsProps> = ({onLogin, onLogout}) => {
     const storeUserData = useCallback(({token, uniqname, is_staff: isStaff, error}: {token: string, uniqname: string, is_staff: boolean, error: any}) => {
         if (error) {
-            setLoggedOut();
+            onLogout();
             return;
         }
 
-        api_client.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-        setLoginData({token, uniqname, isStaff});
-        localStorage.setItem('credentials', JSON.stringify({token, uniqname, isStaff}));
-    }, [setLoginData, setLoggedOut]);
+        onLogin(token, uniqname);
+    }, [onLogin, onLogout]);
 
     const onTokenLogin = useCallback((token: string) => {
         tokenLogin(token, storeUserData);
@@ -118,18 +150,10 @@ const LoggedOutNavbarContents = (props: any) => {
 
 type LoggedInNavbarContentsProps = {
     uniqname: string;
-
+    onLogout: () => Promise<void>;
 }
 
-const LoggedInNavbarContents: React.FC<LoggedInNavbarContentsProps> = ({uniqname}) => {
-    const clearLoginData = useUserStore(state => state.onLogout);
-
-    const onLogout = () => {
-        logout().then(() => {
-            localStorage.removeItem('credentials');
-            clearLoginData();
-        });
-    }
+const LoggedInNavbarContents: React.FC<LoggedInNavbarContentsProps> = ({uniqname, onLogout}) => {
     return (
         <HStack>
             <Icon as={IoPerson} boxSize={4} mr={2}/>
