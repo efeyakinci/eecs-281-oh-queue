@@ -1,9 +1,10 @@
 import React, {useEffect} from 'react';
 import {Collapse, Flex, Heading, HStack, Text, useColorMode, VStack} from "@chakra-ui/react";
 import {MotionBox, MotionFlex, MotionIconButton, MotionVStack} from "@/components/motion-components/motion-components";
-import {ArrowRightIcon} from "@chakra-ui/icons";
+import {ArrowDownIcon, ArrowRightIcon} from "@chakra-ui/icons";
 import {useRouter} from "next/router";
 import { AvailableQueue } from '@/types/QueueTypes';
+import {LayoutGroup} from "framer-motion";
 
 const toggleButtonVariants = {
     "closed": {
@@ -63,7 +64,7 @@ const QueueSelector: React.FC<QueueSelectorProps> = ({onToggle, isOpen, selected
 
         return classQueues;
     }
-    
+
     return (
         <MotionVStack align={'flex-start'} borderRightWidth={'1px'} {...props}>
             <Flex w={'100%'} justify={'flex-end'}>
@@ -93,6 +94,8 @@ const QueueSelector: React.FC<QueueSelectorProps> = ({onToggle, isOpen, selected
                 <Heading px={4} size={'md'}>Office Hours Queues</Heading>
 
                 <VStack w={'100%'} px={4} mt={4}>
+                    <LayoutGroup>
+
                     <VStack w={'100%'} px={2} pb={2} spacing={2} borderLeftWidth={'1px'}>
                     {
                         Object.entries(getClassQueues(availableQueues)).map(([class_name, queues]) =>
@@ -106,6 +109,7 @@ const QueueSelector: React.FC<QueueSelectorProps> = ({onToggle, isOpen, selected
                         )
                     }
                     </VStack>
+                    </LayoutGroup>
                 </VStack>
             </MotionVStack>
         </MotionVStack>
@@ -130,14 +134,14 @@ const ClassQueues = ({className, queues, selectedQueueId, setSelectedQueueId}: C
 
     return (
         <VStack w={'100%'} px={4} pb={2} spacing={2} align={'start'}>
-            <HStack 
-                w={'100%'} 
-                justify={'space-between'} 
+            <HStack
+                w={'100%'}
+                justify={'space-between'}
                 cursor={'pointer'}
                 mb={2}
                 onClick={() => setIsCollapsed(prevState => !prevState)}>
                 <Heading size={'sm'}>{className}</Heading>
-                <ArrowRightIcon boxSize={4} />
+                <ArrowDownIcon boxSize={4} />
             </HStack>
             <Collapse in={!isCollapsed}>
                 {Object.entries(queues).map(([queue_id, queue]) =>
@@ -176,6 +180,7 @@ const SelectableQueue = ({queueName, selected, ...props}: SelectableQueueProps) 
             justify={'flex-start'}
             w={'100%'}
             p={2}
+            layout={'position'}
             borderRadius={8}
             cursor={'pointer'}
             _hover={{boxShadow: "md",

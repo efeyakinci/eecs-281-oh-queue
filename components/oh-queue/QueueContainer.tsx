@@ -51,7 +51,7 @@ const QueueContainer = (props: any) => {
     const [isQueueSelectorOpen, setIsQueueSelectorOpen] = useState(true);
     const queueSelectorVariants = {
         closed: {
-            flex: 1
+            flex: 0
         },
         open: {
             flex: 2
