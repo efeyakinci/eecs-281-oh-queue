@@ -19,10 +19,10 @@ import React, {useState} from "react";
 import {requestHeartbeat, sendMessage} from "@/service_components/SocketApi";
 
 const SendMessageModal = ({isOpen, onClose, queueId, ...props}) => {
-    const [timeToRespond, setTimeToRespond] = useState(5);
+    const [timeToRespond, setTimeToRespond] = useState('5');
 
     const onRequestHeartbeat = () => {
-        requestHeartbeat(queueId, timeToRespond);
+        requestHeartbeat(queueId, Number.parseInt(timeToRespond));
         onClose();
     }
 
