@@ -6,6 +6,7 @@ import {queryIfStaff} from "@/service_components/SocketApi";
 const useQueueStore = create<QueueState>((set, get) => ({
     selectedQueueId: undefined,
     selectedQueueName: undefined,
+    selectedQueueClass: undefined,
     isUserStaff: false,
     status: {
         userInQueue: false,
@@ -18,7 +19,7 @@ const useQueueStore = create<QueueState>((set, get) => ({
     setSelectedQueue: (fn: UpdateQueueFn) => {
         set(state => {
             const updated = fn({ selectedQueueId: state.selectedQueueId, selectedQueueName: state.selectedQueueName });
-            return { selectedQueueId: updated.selectedQueueId, selectedQueueName: updated.selectedQueueName};
+            return { selectedQueueId: updated.selectedQueueId, selectedQueueName: updated.selectedQueueName, selectedQueueClass: updated.selectedQueueClass };
         });
         get().checkIfStaff();
     },

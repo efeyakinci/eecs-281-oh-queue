@@ -166,7 +166,7 @@ const QueueContainer = (props: any) => {
                 unsubscribeFromQueue(prevQueueSelection.selectedQueueId);
             }
             subscribeToQueue(queueId);
-            return {selectedQueueId: queueId, selectedQueueName: availableQueues[queueId].queue_name};
+            return {selectedQueueId: queueId, selectedQueueName: availableQueues[queueId].queue_name, selectedQueueClass: availableQueues[queueId].class_name}
         });
         router.replace(`/queues/${queueId}`, `/queues/${queueId}`, {shallow: true});
     }

@@ -22,6 +22,7 @@ const QueueList = ({...props}) => {
 
     const selectedQueueId = useQueueStore(state => state.selectedQueueId);
     const selectedQueueName = useQueueStore(state => state.selectedQueueName);
+    const selectedQueueClass = useQueueStore(state => state.selectedQueueClass);
 
     const setQueueStatus = useQueueStore(state => state.setStatus);
     const loggedInUser = useUserStore(state => state.uniqname);
@@ -129,6 +130,7 @@ const QueueList = ({...props}) => {
             <Head>
                 <title>{queueWaiters.length ? "(" + queueWaiters.length + ")" : ""} EECS Office Hours Queue</title>
             </Head>
+            <Heading size={'md'}>{selectedQueueClass}</Heading>
             <Heading>{
                 selectedQueueName ? selectedQueueName : "Select a queue to get started!"
             }</Heading>

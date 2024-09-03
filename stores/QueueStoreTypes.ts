@@ -23,6 +23,7 @@ export type QueueStatus = {
 export type QueueState = {
     selectedQueueId?: string;
     selectedQueueName?: string;
+    selectedQueueClass?: string;
     isUserStaff: boolean;
     status: QueueStatus;
 
@@ -33,7 +34,7 @@ export type QueueState = {
 }
 
 export type UpdateQueueFn = {
-    (queue: { selectedQueueId?: string; selectedQueueName?: string }): { selectedQueueId?: string; selectedQueueName?: string };
+    (queue: { selectedQueueId?: string; selectedQueueName?: string; selectedQueueClass?: string }): { selectedQueueId?: string; selectedQueueName?: string, selectedQueueClass?: string };
 }
 
 export type UpdateStatusFn = {
